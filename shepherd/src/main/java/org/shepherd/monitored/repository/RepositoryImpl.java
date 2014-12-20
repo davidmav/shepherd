@@ -1,30 +1,27 @@
 package org.shepherd.monitored.repository;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.MonitoringTask;
 import org.shepherd.monitored.repository.exception.DuplicateMonitoringTaskException;
 import org.shepherd.monitored.repository.exception.MonitoredAlreadyExistsException;
 import org.shepherd.monitored.repository.exception.MonitoredNotFoundException;
 import org.shepherd.monitored.repository.exception.MonitoringTaskNotFoundException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
-@Component
-public class RepositoryImpl implements Repository {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-	protected Map<String, Monitored> monitoredMap = new HashMap<String, Monitored>(); 
-	
+@Component
+public class RepositoryImpl implements Repository, InitializingBean {
+
+	protected Map<String, Monitored> monitoredMap = new HashMap<String, Monitored>();
+
 	protected Collection<MonitoringTask> monitoringTasks = new ArrayList<MonitoringTask>();
-	
-	public RepositoryImpl() {
-		// TODO Auto-generated constructor stub
-	}
-	
+
 	public void setMonitored(Collection<Monitored> m) {
 		for (Monitored monitored : m) {
 			this.monitoredMap.put(monitored.getName(), monitored);
@@ -76,7 +73,7 @@ public class RepositoryImpl implements Repository {
 		if (this.monitoringTasks.contains(monitoringTask)) {
 			throw new DuplicateMonitoringTaskException();
 		}
-		
+
 	}
 
 	@Override
@@ -86,7 +83,13 @@ public class RepositoryImpl implements Repository {
 		} else {
 			this.monitoringTasks.remove(monitoringTask);
 		}
-		
+
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+
 	}
 
 }

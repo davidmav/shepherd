@@ -52,8 +52,6 @@ public class JmxProcessImpl implements JmxProcess {
 		}
 
 	}
-	
-	
 
 	@Override
 	public String getName() {
