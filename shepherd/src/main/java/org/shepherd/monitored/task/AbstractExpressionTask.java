@@ -51,7 +51,7 @@ public abstract class AbstractExpressionTask implements MonitoringTask {
 		return new SimpleMonitoringOutput(getMonitored(), this, currentSeverity, messageBuilder.toString());
 	}
 
-	protected abstract Object getRootObject();
+	protected abstract Object getRootObject() throws RootObjectNotCreatedException;
 
 	protected abstract EvaluationContext getEvaluationContext();
 
