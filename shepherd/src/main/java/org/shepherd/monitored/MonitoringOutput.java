@@ -1,5 +1,7 @@
 package org.shepherd.monitored;
 
+import java.util.Date;
+
 public interface MonitoringOutput {
 
 	public static enum Severity {
@@ -15,5 +17,7 @@ public interface MonitoringOutput {
 	public Severity getSeverity();
 
 	public String getMessage();
+
+	public Date getTimestamp();
 
 }

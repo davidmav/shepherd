@@ -4,19 +4,35 @@ import org.shepherd.monitored.MonitoringOutput;
 import org.shepherd.monitored.MonitoringOutput.Severity;
 import org.shepherd.monitored.MonitoringTask;
 import org.shepherd.monitored.SimpleMonitoringOutput;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.expression.BeanFactoryResolver;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.Assert;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class AbstractExpressionTask implements MonitoringTask {
+/**
+ * 
+ * 
+ * @author DavidM
+ * @since Dec 25, 2014
+ */
+public abstract class AbstractExpressionTask implements MonitoringTask, ApplicationContextAware {
 
 	private static final String OUTPUT_MESSAGE = "Expression: {0} is false";
+
+	protected EvaluationContext evaluationContext;
+
+	protected ConfigurableApplicationContext applicationContext;
 
 	private Map<Expression, Severity> expressions;
 
@@ -53,6 +69,58 @@ public abstract class AbstractExpressionTask implements MonitoringTask {
 
 	protected abstract Object getRootObject() throws RootObjectNotCreatedException;
 
-	protected abstract EvaluationContext getEvaluationContext();
+	protected EvaluationContext getEvaluationContext() {
+		if (this.evaluationContext == null) {
+			StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
+			if (this.applicationContext != null) {
+				evaluationContext.setBeanResolver(new BeanFactoryResolver(this.applicationContext.getBeanFactory()));
+			}
+			this.evaluationContext = evaluationContext;
+		}
+		return this.evaluationContext;
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext = (ConfigurableApplicationContext)applicationContext;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((expressions == null) ? 0 : expressions.hashCode());
+		result = prime * result + ((getMonitored() == null) ? 0 : getMonitored().hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		AbstractExpressionTask other = (AbstractExpressionTask)obj;
+		if (expressions == null) {
+			if (other.expressions != null) {
+				return false;
+			}
+		} else if (!expressions.equals(other.expressions)) {
+			return false;
+		}
+		if (getMonitored() == null) {
+			if (other.getMonitored() != null) {
+				return false;
+			}
+		} else if (!getMonitored().equals(other.getMonitored())) {
+			return false;
+		}
+		return true;
+	}
 
 }

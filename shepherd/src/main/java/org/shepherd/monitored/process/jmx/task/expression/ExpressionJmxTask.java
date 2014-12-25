@@ -2,19 +2,11 @@ package org.shepherd.monitored.process.jmx.task.expression;
 
 import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.MonitoringOutput.Severity;
-import org.shepherd.monitored.MonitoringTask;
 import org.shepherd.monitored.process.jmx.JmxProcess;
 import org.shepherd.monitored.task.AbstractExpressionTask;
 import org.shepherd.monitored.task.RootObjectNotCreatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.expression.BeanFactoryResolver;
-import org.springframework.expression.EvaluationContext;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
@@ -29,17 +21,13 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-public class ExpressionJmxTask extends AbstractExpressionTask implements MonitoringTask, ApplicationContextAware {
+public class ExpressionJmxTask extends AbstractExpressionTask {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExpressionJmxTask.class);
 
 	protected JmxProcess jmxProcess;
 
 	protected Object rootObject;
-
-	protected EvaluationContext evaluationContext;
-
-	protected ConfigurableApplicationContext applicationContext;
 
 	public ExpressionJmxTask(JmxProcess jmxProcess, Map<String, Severity> expressions) {
 		super(expressions);
@@ -168,21 +156,6 @@ public class ExpressionJmxTask extends AbstractExpressionTask implements Monitor
 			}
 		};
 		return object;
-	}
-
-	@Override
-	protected EvaluationContext getEvaluationContext() {
-		if (this.applicationContext != null) {
-			StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-			evaluationContext.setBeanResolver(new BeanFactoryResolver(this.applicationContext.getBeanFactory()));
-			this.evaluationContext = evaluationContext;
-		}
-		return this.evaluationContext;
-	}
-
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = (ConfigurableApplicationContext)applicationContext;
 	}
 
 }

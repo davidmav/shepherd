@@ -2,12 +2,15 @@ package org.shepherd.monitored;
 
 import org.springframework.util.Assert;
 
+import java.util.Date;
+
 public class SimpleMonitoringOutput implements MonitoringOutput {
 
 	private Monitored monitored;
 	private MonitoringTask monitoringTask;
 	private Severity severity;
 	private String message;
+	private Date timestamp;
 
 	public SimpleMonitoringOutput(Monitored monitored, MonitoringTask monitoringTask, Severity severity, String message) {
 		Assert.notNull(monitored);
@@ -17,6 +20,7 @@ public class SimpleMonitoringOutput implements MonitoringOutput {
 		this.monitoringTask = monitoringTask;
 		this.severity = severity;
 		this.message = message;
+		this.timestamp = new Date();
 	}
 
 	@Override
@@ -37,6 +41,11 @@ public class SimpleMonitoringOutput implements MonitoringOutput {
 	@Override
 	public String getMessage() {
 		return this.message;
+	}
+
+	@Override
+	public Date getTimestamp() {
+		return this.timestamp;
 	}
 
 }
