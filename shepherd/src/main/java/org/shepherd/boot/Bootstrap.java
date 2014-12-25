@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 @ImportResource("META-INF/bootstrap/*")
 public class Bootstrap {
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		ApplicationContext applicationContext = SpringApplication.run(Bootstrap.class, args);
 	}
