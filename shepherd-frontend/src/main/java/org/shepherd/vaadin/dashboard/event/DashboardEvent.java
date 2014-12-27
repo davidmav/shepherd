@@ -1,8 +1,5 @@
 package org.shepherd.vaadin.dashboard.event;
 
-import java.util.Collection;
-
-import org.shepherd.vaadin.dashboard.domain.Transaction;
 import org.shepherd.vaadin.dashboard.view.DashboardViewType;
 
 /*
@@ -10,76 +7,66 @@ import org.shepherd.vaadin.dashboard.view.DashboardViewType;
  */
 public abstract class DashboardEvent {
 
-    public static final class UserLoginRequestedEvent {
-        private final String userName, password;
+	public static final class UserLoginRequestedEvent {
 
-        public UserLoginRequestedEvent(final String userName,
-                final String password) {
-            this.userName = userName;
-            this.password = password;
-        }
+		private final String userName, password;
 
-        public String getUserName() {
-            return userName;
-        }
+		public UserLoginRequestedEvent(final String userName, final String password) {
+			this.userName = userName;
+			this.password = password;
+		}
 
-        public String getPassword() {
-            return password;
-        }
-    }
+		public String getUserName() {
+			return userName;
+		}
 
-    public static class BrowserResizeEvent {
+		public String getPassword() {
+			return password;
+		}
+	}
 
-    }
+	public static class BrowserResizeEvent {
 
-    public static class UserLoggedOutEvent {
+	}
 
-    }
+	public static class UserLoggedOutEvent {
 
-    public static class NotificationsCountUpdatedEvent {
-    }
+	}
 
-    public static final class ReportsCountUpdatedEvent {
-        private final int count;
+	public static class NotificationsCountUpdatedEvent {
+	}
 
-        public ReportsCountUpdatedEvent(final int count) {
-            this.count = count;
-        }
+	public static final class ReportsCountUpdatedEvent {
 
-        public int getCount() {
-            return count;
-        }
+		private final int count;
 
-    }
+		public ReportsCountUpdatedEvent(final int count) {
+			this.count = count;
+		}
 
-    public static final class TransactionReportEvent {
-        private final Collection<Transaction> transactions;
+		public int getCount() {
+			return count;
+		}
 
-        public TransactionReportEvent(final Collection<Transaction> transactions) {
-            this.transactions = transactions;
-        }
+	}
 
-        public Collection<Transaction> getTransactions() {
-            return transactions;
-        }
-    }
+	public static final class PostViewChangeEvent {
 
-    public static final class PostViewChangeEvent {
-        private final DashboardViewType view;
+		private final DashboardViewType view;
 
-        public PostViewChangeEvent(final DashboardViewType view) {
-            this.view = view;
-        }
+		public PostViewChangeEvent(final DashboardViewType view) {
+			this.view = view;
+		}
 
-        public DashboardViewType getView() {
-            return view;
-        }
-    }
+		public DashboardViewType getView() {
+			return view;
+		}
+	}
 
-    public static class CloseOpenWindowsEvent {
-    }
+	public static class CloseOpenWindowsEvent {
+	}
 
-    public static class ProfileUpdatedEvent {
-    }
+	public static class ProfileUpdatedEvent {
+	}
 
 }

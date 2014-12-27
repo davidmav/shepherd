@@ -16,27 +16,27 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://vaadin.com/nexus/content/repositories/vaadin-addons</url>
+		</repository>
+		<repository>
+			<id>sonatype-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>sonatype vaadin</id>
+			<url>https://oss.sonatype.org/content/repositories/vaadin/</url>
+		</repository>
+	</repositories>
 	<build>
-		<repositories>
-			<repository>
-				<id>vaadin-addons</id>
-				<url>http://vaadin.com/nexus/content/repositories/vaadin-addons</url>
-			</repository>
-			<repository>
-				<id>sonatype-snapshots</id>
-				<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-				<snapshots>
-					<enabled>true</enabled>
-				</snapshots>
-				<releases>
-					<enabled>false</enabled>
-				</releases>
-			</repository>
-			<repository>
-				<id>sonatype vaadin</id>
-				<url>https://oss.sonatype.org/content/repositories/vaadin/</url>
-			</repository>
-		</repositories>
 
 		<plugins>
 

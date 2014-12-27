@@ -5,17 +5,15 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 
 import org.shepherd.vaadin.dashboard.view.dashboard.DashboardView;
-import org.shepherd.vaadin.dashboard.view.reports.ReportsView;
-import org.shepherd.vaadin.dashboard.view.sales.SalesView;
-import org.shepherd.vaadin.dashboard.view.schedule.ScheduleView;
-import org.shepherd.vaadin.dashboard.view.transactions.TransactionsView;
+import org.shepherd.vaadin.dashboard.view.monitored.MonitoredView;
+import org.shepherd.vaadin.dashboard.view.monitoringtasks.MonitoringTasksView;
+import org.shepherd.vaadin.dashboard.view.settings.SettingsView;
 
 public enum DashboardViewType {
-	DASHBOARD("dashboard", DashboardView.class, FontAwesome.HOME, true),
-	SALES("monitored", SalesView.class, FontAwesome.BAR_CHART_O, false),
-	TRANSACTIONS("monitoring tasks", TransactionsView.class, FontAwesome.TABLE, false),
-	REPORTS("reports", ReportsView.class, FontAwesome.FILE_TEXT_O, true),
-	SCHEDULE("schedule", ScheduleView.class, FontAwesome.CALENDAR_O, false);
+	DASHBOARD("Dashboard", DashboardView.class, FontAwesome.HOME, true),
+	MONITORED("Monitored", MonitoredView.class, FontAwesome.CLOUD, false),
+	MONITORINGTASKS("Monitoring Tasks", MonitoringTasksView.class, FontAwesome.EYE, false),
+	SETTINGS("Settings", SettingsView.class, FontAwesome.WRENCH, true);
 
 	private final String viewName;
 	private final Class<? extends View> viewClass;

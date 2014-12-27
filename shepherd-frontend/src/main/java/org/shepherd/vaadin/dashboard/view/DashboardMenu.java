@@ -1,14 +1,10 @@
 package org.shepherd.vaadin.dashboard.view;
 
 import com.google.common.eventbus.Subscribe;
-import com.vaadin.event.dd.DragAndDropEvent;
-import com.vaadin.event.dd.DropHandler;
-import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractSelect.AcceptItem;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -16,26 +12,18 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.DragAndDropWrapper;
-import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.shepherd.vaadin.dashboard.DashboardUI;
-import org.shepherd.vaadin.dashboard.domain.Transaction;
 import org.shepherd.vaadin.dashboard.domain.User;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.TransactionReportEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
-
-import java.util.Collection;
 
 /**
  * A responsive menu component providing user information and the controls for primary navigation between the views.
@@ -150,38 +138,38 @@ public final class DashboardMenu extends CustomComponent {
 		for (final DashboardViewType view : DashboardViewType.values()) {
 			Component menuItemComponent = new ValoMenuItemButton(view);
 
-			if (view == DashboardViewType.REPORTS) {
-				// Add drop target to reports button
-				DragAndDropWrapper reports = new DragAndDropWrapper(menuItemComponent);
-				reports.setDragStartMode(DragStartMode.NONE);
-				reports.setDropHandler(new DropHandler() {
-
-					@Override
-					public void drop(final DragAndDropEvent event) {
-						UI.getCurrent().getNavigator().navigateTo(DashboardViewType.REPORTS.getViewName());
-						Table table = (Table)event.getTransferable().getSourceComponent();
-						DashboardEventBus.post(new TransactionReportEvent((Collection<Transaction>)table.getValue()));
-					}
-
-					@Override
-					public AcceptCriterion getAcceptCriterion() {
-						return AcceptItem.ALL;
-					}
-
-				});
-				menuItemComponent = reports;
-			}
+			//			if (view == DashboardViewType.REPORTS) {
+			//				// Add drop target to reports button
+			//				DragAndDropWrapper reports = new DragAndDropWrapper(menuItemComponent);
+			//				reports.setDragStartMode(DragStartMode.NONE);
+			//				reports.setDropHandler(new DropHandler() {
+			//
+			//					@Override
+			//					public void drop(final DragAndDropEvent event) {
+			//						UI.getCurrent().getNavigator().navigateTo(DashboardViewType.REPORTS.getViewName());
+			//						Table table = (Table)event.getTransferable().getSourceComponent();
+			//						DashboardEventBus.post(new TransactionReportEvent((Collection<Transaction>)table.getValue()));
+			//					}
+			//
+			//					@Override
+			//					public AcceptCriterion getAcceptCriterion() {
+			//						return AcceptItem.ALL;
+			//					}
+			//
+			//				});
+			//				menuItemComponent = reports;
+			//			}
 
 			if (view == DashboardViewType.DASHBOARD) {
 				notificationsBadge = new Label();
 				notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
 				menuItemComponent = buildBadgeWrapper(menuItemComponent, notificationsBadge);
 			}
-			if (view == DashboardViewType.REPORTS) {
-				reportsBadge = new Label();
-				reportsBadge.setId(REPORTS_BADGE_ID);
-				menuItemComponent = buildBadgeWrapper(menuItemComponent, reportsBadge);
-			}
+			//			if (view == DashboardViewType.REPORTS) {
+			//				reportsBadge = new Label();
+			//				reportsBadge.setId(REPORTS_BADGE_ID);
+			//				menuItemComponent = buildBadgeWrapper(menuItemComponent, reportsBadge);
+			//			}
 
 			menuItemsLayout.addComponent(menuItemComponent);
 		}
@@ -215,7 +203,8 @@ public final class DashboardMenu extends CustomComponent {
 
 	@Subscribe
 	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
-		int unreadNotificationsCount = DashboardUI.getDataProvider().getUnreadNotificationsCount();
+		//		int unreadNotificationsCount = DashboardUI.getDataProvider().getUnreadNotificationsCount();
+		int unreadNotificationsCount = 0;
 		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
 		notificationsBadge.setVisible(unreadNotificationsCount > 0);
 	}
