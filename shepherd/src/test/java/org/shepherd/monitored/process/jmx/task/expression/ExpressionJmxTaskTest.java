@@ -20,7 +20,7 @@ public class ExpressionJmxTaskTest extends AbstractMonitoringTest {
 
 	@Test
 	public void testRootObject() {
-		ExpressionJmxTask task = new ExpressionJmxTask(this.jmxProcess, Collections.singletonMap("test", Severity.INFO));
+		ExpressionJmxTask task = new ExpressionJmxTask(this.jmxProcess, Collections.<String, Severity> singletonMap("test", Severity.INFO));
 		Map<String, JmxTreeObject> rootObject = (Map<String, JmxTreeObject>)task.getRootObject();
 		Object attribute = rootObject.get("org.apache.activemq").getObject("Broker").getObject("localhost").getObject("Health").getAttribute("CurrentStatus");
 		Assert.assertEquals(attribute, "Good");

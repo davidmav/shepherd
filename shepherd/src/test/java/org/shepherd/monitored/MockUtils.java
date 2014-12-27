@@ -1,7 +1,5 @@
 package org.shepherd.monitored;
 
-import com.sun.jmx.mbeanserver.Util;
-
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.shepherd.monitored.process.jmx.JmxProcess;
@@ -14,19 +12,25 @@ import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 
-@SuppressWarnings("restriction")
 public class MockUtils {
 
 	public static JmxProcess createJmxProcessMock() {
 		JmxProcess mock = EasyMock.createMock(JmxProcess.class);
 		JMXConnector jmxConnectorMock = EasyMock.createMock(JMXConnector.class);
 		MBeanServerConnection mBeanServerConnectionMock = EasyMock.createMock(MBeanServerConnection.class);
-		ObjectName healthObjectName = Util.newObjectName("org.apache.activemq:type=Broker,brokerName=localhost,service=Health");
-		ObjectName brokerObjectName = Util.newObjectName("org.apache.activemq:type=Broker,brokerName=localhost");
+		ObjectName healthObjectName = null;
+		ObjectName brokerObjectName = null;
+		try {
+			healthObjectName = new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost,service=Health");
+			brokerObjectName = new ObjectName("org.apache.activemq:type=Broker,brokerName=localhost");
+		} catch (MalformedObjectNameException e1) {
+			e1.printStackTrace();
+		}
 		Set<ObjectName> objects = new HashSet<ObjectName>();
 		objects.add(brokerObjectName);
 		objects.add(healthObjectName);
