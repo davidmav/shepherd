@@ -1,5 +1,6 @@
 package org.shepherd.monitored.task;
 
+import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.MonitoringOutput;
 import org.shepherd.monitored.MonitoringOutput.Severity;
 import org.shepherd.monitored.MonitoringTask;
@@ -26,7 +27,7 @@ import java.util.Map;
  * @author DavidM
  * @since Dec 25, 2014
  */
-public abstract class AbstractExpressionTask implements MonitoringTask, ApplicationContextAware {
+public abstract class AbstractExpressionTask<T extends Monitored> implements MonitoringTask<T>, ApplicationContextAware {
 
 	private static final String OUTPUT_MESSAGE = "Expression: {0} is false";
 
@@ -46,7 +47,7 @@ public abstract class AbstractExpressionTask implements MonitoringTask, Applicat
 	}
 
 	@Override
-	public MonitoringOutput runMonitor() {
+	public MonitoringOutput<T> runMonitor() {
 		EvaluationContext evaluationContext = getEvaluationContext();
 		Severity currentSeverity = Severity.INFO;
 		Object rootObject = getRootObject();

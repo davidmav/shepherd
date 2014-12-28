@@ -2,7 +2,7 @@ package org.shepherd.monitored;
 
 import java.util.Date;
 
-public interface MonitoringOutput {
+public interface MonitoringOutput<T extends Monitored> {
 
 	public static enum Severity {
 		ERROR,
@@ -10,9 +10,9 @@ public interface MonitoringOutput {
 		INFO
 	}
 
-	public Monitored getMonitored();
+	public T getMonitored();
 
-	public MonitoringTask getMonitoringTask();
+	public MonitoringTask<T> getMonitoringTask();
 
 	public Severity getSeverity();
 
