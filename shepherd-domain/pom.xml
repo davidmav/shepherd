@@ -16,4 +16,15 @@
       </plugin>
     </plugins>
   </build>
+  <name>Shepherd Monitor Domain</name>
+  <url>https://github.com/davidmav/shepherd</url>
+  <issueManagement>
+  	<url>https://github.com/davidmav/shepherd</url>
+  </issueManagement>
+  <organization>
+  	<url>https://github.com/davidmav/shepherd</url>
+  </organization>
+  <scm>
+  	<url>https://github.com/davidmav/shepherd</url>
+  </scm>
 </project>

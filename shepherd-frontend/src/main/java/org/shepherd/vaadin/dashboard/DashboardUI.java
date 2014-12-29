@@ -3,7 +3,7 @@ package org.shepherd.vaadin.dashboard;
 import java.util.Locale;
 
 import org.shepherd.domain.User;
-import org.shepherd.monitored.service.UserServiceImpl;
+import org.shepherd.monitored.service.UserService;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
@@ -44,7 +44,7 @@ public final class DashboardUI extends UI {
 	private static ApplicationContext applicationContext;
 	
 	@Autowired
-	private UserServiceImpl userService;
+	private UserService userService;
 
 	public static void main(String[] args) {
 		DashboardUI.applicationContext = SpringApplication.run(DashboardUI.class, args);
