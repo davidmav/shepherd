@@ -1,6 +1,6 @@
 package org.shepherd.vaadin.dashboard.view;
 
-import org.shepherd.vaadin.dashboard.domain.User;
+import org.shepherd.domain.User;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;

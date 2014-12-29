@@ -1,4 +1,4 @@
-package org.shepherd.vaadin.dashboard.domain;
+package org.shepherd.domain;
 
 public final class User {
     private String role;

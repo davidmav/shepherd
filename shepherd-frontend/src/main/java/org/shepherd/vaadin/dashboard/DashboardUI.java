@@ -2,13 +2,15 @@ package org.shepherd.vaadin.dashboard;
 
 import java.util.Locale;
 
-import org.shepherd.vaadin.dashboard.domain.User;
+import org.shepherd.domain.User;
+import org.shepherd.monitored.service.UserServiceImpl;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 import org.shepherd.vaadin.dashboard.view.MainView;
 import org.shepherd.vaadin.dashboard.view.login.LoginView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
@@ -40,6 +42,9 @@ public final class DashboardUI extends UI {
 
 	@SuppressWarnings("unused")
 	private static ApplicationContext applicationContext;
+	
+	@Autowired
+	private UserServiceImpl userService;
 
 	public static void main(String[] args) {
 		DashboardUI.applicationContext = SpringApplication.run(DashboardUI.class, args);
@@ -87,7 +92,7 @@ public final class DashboardUI extends UI {
 			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 			setContent(new MainView());
 			removeStyleName("loginview");
-			getNavigator().navigateTo(getNavigator().getState());
+			getNavigator().navigateTo("Dashboard");
 		} else {
 			setContent(new LoginView());
 			addStyleName("loginview");
@@ -103,12 +108,12 @@ public final class DashboardUI extends UI {
 
 	//dummy authentication
 	private User authenticate(String userName, String password) throws Exception {
+		
+		User user = this.userService.authenticate(userName,password);
+		
 		if ( !"admin".equals ( userName ) || !password.equals ( "admin" )){
 			throw new Exception ("Login failed !");
 		}
-		User user = new User();
-		user.setFirstName(userName);
-		user.setRole("admin");
 		
 		return user;
 		
