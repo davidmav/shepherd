@@ -112,7 +112,7 @@ public final class DashboardUI extends UI {
 		User user = this.userService.authenticate(userName,password);
 		
 		if ( !"admin".equals ( userName ) || !password.equals ( "admin" )){
-			throw new Exception ("Login failed !");
+			throw new Exception ("Login failed !!!");
 		}
 		
 		return user;
