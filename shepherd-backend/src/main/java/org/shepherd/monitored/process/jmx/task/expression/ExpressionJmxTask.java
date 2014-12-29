@@ -1,6 +1,5 @@
 package org.shepherd.monitored.process.jmx.task.expression;
 
-import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.MonitoringOutput.Severity;
 import org.shepherd.monitored.process.jmx.JmxProcess;
 import org.shepherd.monitored.task.AbstractExpressionTask;
@@ -21,7 +20,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 
-public class ExpressionJmxTask extends AbstractExpressionTask {
+public class ExpressionJmxTask extends AbstractExpressionTask<JmxProcess> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExpressionJmxTask.class);
 
@@ -36,7 +35,7 @@ public class ExpressionJmxTask extends AbstractExpressionTask {
 	}
 
 	@Override
-	public Monitored getMonitored() {
+	public JmxProcess getMonitored() {
 		return this.jmxProcess;
 	}
 

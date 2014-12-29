@@ -1,9 +1,9 @@
 package org.shepherd.monitored;
 
-public interface MonitoringTask {
-	
-	public Monitored getMonitored();
-	
-	public MonitoringOutput runMonitor();
+public interface MonitoringTask<T extends Monitored> {
+
+	public T getMonitored();
+
+	public MonitoringOutput<T> runMonitor();
 
 }

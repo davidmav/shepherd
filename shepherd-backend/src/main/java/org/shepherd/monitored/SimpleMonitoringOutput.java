@@ -4,15 +4,15 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 
-public class SimpleMonitoringOutput implements MonitoringOutput {
+public class SimpleMonitoringOutput<T extends Monitored> implements MonitoringOutput<T> {
 
-	private Monitored monitored;
-	private MonitoringTask monitoringTask;
+	private T monitored;
+	private MonitoringTask<T> monitoringTask;
 	private Severity severity;
 	private String message;
 	private Date timestamp;
 
-	public SimpleMonitoringOutput(Monitored monitored, MonitoringTask monitoringTask, Severity severity, String message) {
+	public SimpleMonitoringOutput(T monitored, MonitoringTask<T> monitoringTask, Severity severity, String message) {
 		Assert.notNull(monitored);
 		Assert.notNull(monitoringTask);
 		Assert.notNull(severity);
@@ -24,12 +24,12 @@ public class SimpleMonitoringOutput implements MonitoringOutput {
 	}
 
 	@Override
-	public Monitored getMonitored() {
+	public T getMonitored() {
 		return this.monitored;
 	}
 
 	@Override
-	public MonitoringTask getMonitoringTask() {
+	public MonitoringTask<T> getMonitoringTask() {
 		return this.monitoringTask;
 	}
 
