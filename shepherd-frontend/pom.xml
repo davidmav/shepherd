@@ -144,11 +144,6 @@
 			<artifactId>jetty-util</artifactId>
 			<version>8.1.16.v20140903</version><!--$NO-MVN-MAN-VER$-->
 		</dependency>
-		<dependency>
-			<groupId>shepherd-domain</groupId>
-			<artifactId>shepherd-domain</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 	<scm>
 		<url>https://github.com/davidmav/shepherd</url>
