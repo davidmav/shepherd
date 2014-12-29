@@ -1,5 +1,12 @@
 package org.shepherd.vaadin.dashboard.view;
 
+import org.shepherd.vaadin.dashboard.domain.User;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
@@ -17,13 +24,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
-
-import org.shepherd.vaadin.dashboard.domain.User;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 
 /**
  * A responsive menu component providing user information and the controls for primary navigation between the views.
