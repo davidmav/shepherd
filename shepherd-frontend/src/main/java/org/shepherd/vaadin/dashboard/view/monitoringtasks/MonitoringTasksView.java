@@ -1,12 +1,10 @@
 package org.shepherd.vaadin.dashboard.view.monitoringtasks;
 
-import com.google.common.eventbus.Subscribe;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -16,7 +14,6 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 
 import java.text.DateFormat;
@@ -32,11 +29,10 @@ public final class MonitoringTasksView extends VerticalLayout implements View {
 	private Button createReport;
 	private static final DateFormat DATEFORMAT = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss a");
 	private static final DecimalFormat DECIMALFORMAT = new DecimalFormat("#.##");
-	private static final String[] DEFAULT_COLLAPSIBLE = { "country", "city", "theater", "room", "title", "seats" };
 
 	public MonitoringTasksView() {
 		setSizeFull();
-		addStyleName("transactions");
+		addStyleName("monitoringtasks");
 		DashboardEventBus.register(this);
 
 		addComponent(buildToolbar());
@@ -136,27 +132,6 @@ public final class MonitoringTasksView extends VerticalLayout implements View {
 		table.setImmediate(true);
 
 		return table;
-	}
-
-	private boolean defaultColumnsVisible() {
-		boolean result = true;
-		for (String propertyId : DEFAULT_COLLAPSIBLE) {
-			if (table.isColumnCollapsed(propertyId) == Page.getCurrent().getBrowserWindowWidth() < 800) {
-				result = false;
-			}
-		}
-		return result;
-	}
-
-	@Subscribe
-	public void browserResized(final BrowserResizeEvent event) {
-		// Some columns are collapsed when browser window width gets small
-		// enough to make the table fit better.
-		if (defaultColumnsVisible()) {
-			for (String propertyId : DEFAULT_COLLAPSIBLE) {
-				table.setColumnCollapsed(propertyId, Page.getCurrent().getBrowserWindowWidth() < 800);
-			}
-		}
 	}
 
 	void createNewReportFromSelection() {

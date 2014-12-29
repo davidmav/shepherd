@@ -32,7 +32,7 @@ import com.vaadin.ui.Window;
 
 @Theme("dashboard")
 //@Widgetset("org.shepherd.vaadin.dashboard.DashboardWidgetSet")
-@Title("QuickTickets Dashboard")
+@Title("Shepherd Monitor")
 @SuppressWarnings("serial")
 @ComponentScan(basePackages = { "org.shepherd" })
 @EnableAutoConfiguration

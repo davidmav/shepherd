@@ -3,8 +3,8 @@
 @import "views/login";
 @import "views/dashboardview";
 @import "views/schedule";
-@import "views/sales";
-@import "views/transactions";
+@import "views/monitored";
+@import "views/monitoringtasks";
 @import "views/reports";
 
 // Optimize the CSS output
@@ -31,7 +31,7 @@ $valo-menu-background-color: #414B56;
   @include dashboard-login-view;
   @include dashboard-dashboard-view;
   @include dashboard-schedule-view;
-  @include dashboard-sales-view;
-  @include dashboard-transactions-view;
+  @include dashboard-monitored-view;
+  @include dashboard-monitoringtasks-view;
   @include dashboard-reports-view;
 }
