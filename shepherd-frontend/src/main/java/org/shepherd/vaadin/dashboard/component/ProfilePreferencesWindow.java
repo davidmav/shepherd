@@ -3,10 +3,12 @@ package org.shepherd.vaadin.dashboard.component;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.fieldgroup.PropertyId;
-import org.shepherd.vaadin.dashboard.domain.User;
+
+import org.shepherd.domain.User;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
