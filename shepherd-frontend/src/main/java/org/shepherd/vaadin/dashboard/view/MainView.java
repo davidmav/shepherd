@@ -1,6 +1,7 @@
 package org.shepherd.vaadin.dashboard.view;
 
 import org.shepherd.vaadin.dashboard.DashboardNavigator;
+
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -12,9 +13,11 @@ import com.vaadin.ui.HorizontalLayout;
 @SuppressWarnings("serial")
 public class MainView extends HorizontalLayout {
 
-    public MainView() {
+    public static final String STYLE_NAME = "mainview";
+
+	public MainView() {
         setSizeFull();
-        addStyleName("mainview");
+        addStyleName(STYLE_NAME);
 
         addComponent(new DashboardMenu());
 

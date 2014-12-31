@@ -7,9 +7,7 @@ import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
 import com.vaadin.server.Responsive;
-import com.vaadin.shared.Position;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -19,7 +17,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -28,6 +25,7 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class LoginView extends VerticalLayout implements View{
 
+	public static final String STYLE_NAME = "loginview";
 	private  TextField username;
 
 	private  PasswordField password;
@@ -41,14 +39,6 @@ public class LoginView extends VerticalLayout implements View{
 		addComponent(loginForm);
 		setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
-		Notification notification = new Notification(
-				"Welcome to Dashboard Demo");
-		notification
-		.setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
-		notification.setHtmlContentAllowed(true);
-		notification.setStyleName("tray dark small closable login-help");
-		notification.setPosition(Position.BOTTOM_CENTER);
-		notification.show(Page.getCurrent());
 	}
 
 	private Component buildLoginForm() {
