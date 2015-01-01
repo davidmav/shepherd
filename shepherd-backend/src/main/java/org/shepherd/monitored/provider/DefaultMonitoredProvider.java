@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -26,6 +27,7 @@ import javax.annotation.PostConstruct;
  * @since Dec 28, 2014
  * @version 0.1.0
  */
+@Component
 public class DefaultMonitoredProvider implements MonitoredProvider {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultMonitoredProvider.class);

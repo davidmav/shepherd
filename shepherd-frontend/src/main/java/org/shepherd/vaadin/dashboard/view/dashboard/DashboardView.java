@@ -7,6 +7,8 @@ import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpda
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 import org.shepherd.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
 
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
@@ -35,6 +37,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SuppressWarnings("serial")
+@VaadinView(name = "Dashboard")
+@UIScope
 public final class DashboardView extends Panel implements View, DashboardEditListener {
 
 	public static final String EDIT_ID = "dashboard-edit";

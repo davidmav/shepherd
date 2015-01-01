@@ -1,10 +1,10 @@
 package org.shepherd.vaadin.dashboard.view;
 
-import org.shepherd.vaadin.dashboard.DashboardNavigator;
-
+import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.UI;
 
 /*
  * Dashboard MainView is a simple HorizontalLayout that wraps the menu on the
@@ -19,14 +19,14 @@ public class MainView extends HorizontalLayout {
         setSizeFull();
         addStyleName(STYLE_NAME);
 
-        addComponent(new DashboardMenu());
+		addComponent(new DashboardMenu());
 
-        ComponentContainer content = new CssLayout();
-        content.addStyleName("view-content");
-        content.setSizeFull();
-        addComponent(content);
-        setExpandRatio(content, 1.0f);
+		ComponentContainer content = new CssLayout();
+		content.addStyleName("view-content");
+		content.setSizeFull();
+		addComponent(content);
+		setExpandRatio(content, 1.0f);
 
-        new DashboardNavigator(content);
-    }
+		new Navigator(UI.getCurrent(), content);
+	}
 }

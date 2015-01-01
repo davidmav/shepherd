@@ -18,10 +18,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.vaadin.spring.VaadinUI;
+import org.vaadin.spring.navigator.SpringViewProvider;
 
 import com.google.common.eventbus.Subscribe;
-import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.BrowserWindowResizeEvent;
@@ -33,10 +34,7 @@ import com.vaadin.shared.Position;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-
-@Theme("dashboard")
-//@Widgetset("org.shepherd.vaadin.dashboard.DashboardWidgetSet")
-@Title("Shepherd Dashboard")
+@Title("Shepherd Monitor")
 @SuppressWarnings("serial")
 @ComponentScan(basePackages = { "org.shepherd" })
 @EnableAutoConfiguration
@@ -49,6 +47,9 @@ public final class DashboardUI extends UI {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private SpringViewProvider springViewProvider;
 
 	public static void main(String[] args) {
 		DashboardUI.applicationContext = SpringApplication.run(DashboardUI.class, args);
@@ -97,6 +98,11 @@ public final class DashboardUI extends UI {
 			setContent(new MainView());
 			removeStyleName(LoginView.STYLE_NAME);
 			getNavigator().navigateTo(MainView.STYLE_NAME);
+			
+			removeStyleName("loginview");
+			Navigator navigator = getNavigator();
+			navigator.addProvider(springViewProvider);
+			navigator.navigateTo("Dashboard");
 		} else {
 			setContent(new LoginView());
 			addStyleName(LoginView.STYLE_NAME);
@@ -119,9 +125,7 @@ public final class DashboardUI extends UI {
 			getErrorNotification();
 			throw new Exception ("Login failed !!!");
 		}
-
 		return user;
-
 	}
 
 	@Subscribe

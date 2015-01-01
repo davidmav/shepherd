@@ -1,21 +1,21 @@
 package org.shepherd.vaadin.dashboard.view;
 
+import com.vaadin.navigator.View;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
+
 import org.shepherd.vaadin.dashboard.view.dashboard.DashboardView;
 import org.shepherd.vaadin.dashboard.view.login.LoginView;
 import org.shepherd.vaadin.dashboard.view.monitored.MonitoredView;
 import org.shepherd.vaadin.dashboard.view.monitoringtasks.MonitoringTasksView;
 import org.shepherd.vaadin.dashboard.view.settings.SettingsView;
 
-import com.vaadin.navigator.View;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Resource;
-
 public enum DashboardViewType {
 	DASHBOARD("Dashboard", DashboardView.class, FontAwesome.HOME, true),
 	MONITORED("Monitored", MonitoredView.class, FontAwesome.CLOUD, false),
 	MONITORINGTASKS("Monitoring Tasks", MonitoringTasksView.class, FontAwesome.EYE, false),
-	SETTINGS("Settings", SettingsView.class, FontAwesome.WRENCH, true),
-	LOGIN("Sign in", LoginView.class, FontAwesome.USER, true);
+	SETTINGS("Settings", SettingsView.class, FontAwesome.WRENCH, false),
+	LOGIN("Sign in", LoginView.class, FontAwesome.USER, false);
 
 	private final String viewName;
 	private final Class<? extends View> viewClass;

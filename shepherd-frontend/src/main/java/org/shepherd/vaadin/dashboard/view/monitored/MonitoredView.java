@@ -3,19 +3,41 @@ package org.shepherd.vaadin.dashboard.view.monitored;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.Responsive;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Field.ValueChangeEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.shepherd.monitored.Monitored;
+import org.shepherd.monitored.provider.MonitoredProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
+
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("serial")
+@VaadinView(name = "Monitored")
+@UIScope
 public class MonitoredView extends VerticalLayout implements View {
+
+	@Autowired
+	private MonitoredProvider monitoredProvider;
 
 	public MonitoredView() {
 		setSizeFull();
-		addStyleName("sales");
+		addStyleName("monitored");
 
 		addComponent(buildHeader());
 
@@ -42,10 +64,72 @@ public class MonitoredView extends VerticalLayout implements View {
 		toolbar.setSpacing(true);
 
 		final Button add = new Button("Add");
-		add.setEnabled(false);
-		add.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		add.addClickListener(new ClickListener() {
 
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Window newMonitoredWindow = new Window("New Monitored Application");
+				ComboBox monitoredType = new ComboBox();
+				monitoredType.setCaption("Monitoring Type");
+				Map<MonitoredUIItem, Layout> monitoredItems = new HashMap<MonitoredUIItem, Layout>();
+				for (Class<Monitored> monitoredClass : monitoredProvider.getAllMonitoredClasses()) {
+					MonitoredUIItem item = new MonitoredUIItem(monitoredClass);
+					monitoredItems.put(item, item.getLayout());
+					monitoredType.addItem(item);
+				}
+				VerticalLayout verticalLayout = new VerticalLayout(monitoredType);
+				monitoredType.addListener(new MonitoredItemSetChangeListener(monitoredItems, verticalLayout));
+
+				verticalLayout.setSpacing(true);
+				MarginInfo marginInfo = new MarginInfo(true);
+				verticalLayout.setMargin(marginInfo);
+				newMonitoredWindow.setStyleName("monitored");
+				newMonitoredWindow.setContent(verticalLayout);
+				newMonitoredWindow.setModal(true);
+				newMonitoredWindow.setResizable(false);
+				newMonitoredWindow.setDraggable(false);
+				newMonitoredWindow.setHeight(500, Unit.PIXELS);
+				newMonitoredWindow.setWidth(600, Unit.PIXELS);
+				UI.getCurrent().addWindow(newMonitoredWindow);
+			}
+		});
+		add.setEnabled(true);
+		add.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		toolbar.addComponent(add);
 		return toolbar;
+	}
+
+	private class MonitoredItemSetChangeListener implements Listener {
+
+		private Map<MonitoredUIItem, Layout> monitoredItems;
+
+		private Layout layout;
+
+		private MonitoredUIItem currentSelection;
+
+		public MonitoredItemSetChangeListener(Map<MonitoredUIItem, Layout> monitoredItems, Layout layout) {
+			this.monitoredItems = monitoredItems;
+			this.layout = layout;
+			this.currentSelection = null;
+		}
+
+		@Override
+		public void componentEvent(Event event) {
+			if (event instanceof ValueChangeEvent) {
+				ComboBox source = (ComboBox)event.getSource();
+				Object value = source.getValue();
+				Layout currentSelectionLayout = this.monitoredItems.get(value);
+				if (currentSelection != null && value != currentSelection) {
+					layout.removeComponent(monitoredItems.get(currentSelection));
+				}
+				currentSelection = (MonitoredUIItem)value;
+				if (currentSelectionLayout != null) {
+					layout.addComponent(currentSelectionLayout);
+				}
+			}
+
+		}
+
 	}
 
 	@Override

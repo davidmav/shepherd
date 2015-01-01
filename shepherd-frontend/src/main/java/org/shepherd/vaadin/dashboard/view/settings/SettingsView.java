@@ -20,8 +20,12 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
 
 @SuppressWarnings("serial")
+@VaadinView(name = "Settings")
+@UIScope
 public final class SettingsView extends TabSheet implements View, CloseHandler {
 
 	public static final String CONFIRM_DIALOG_ID = "confirm-dialog";
