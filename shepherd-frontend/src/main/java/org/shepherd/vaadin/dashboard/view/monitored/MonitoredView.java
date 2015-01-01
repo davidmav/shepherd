@@ -18,14 +18,12 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.provider.MonitoredProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.navigator.VaadinView;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,10 +71,10 @@ public class MonitoredView extends VerticalLayout implements View {
 				Window newMonitoredWindow = new Window("New Monitored Application");
 				ComboBox monitoredType = new ComboBox();
 				monitoredType.setCaption("Monitoring Type");
-				Map<MonitoredItem, Collection<Component>> monitoredItems = new HashMap<MonitoredItem, Collection<Component>>();
+				Map<MonitoredUIItem, Layout> monitoredItems = new HashMap<MonitoredUIItem, Layout>();
 				for (Class<Monitored> monitoredClass : monitoredProvider.getAllMonitoredClasses()) {
-					MonitoredItem item = new MonitoredItem(monitoredClass);
-					monitoredItems.put(item, item.getComponents());
+					MonitoredUIItem item = new MonitoredUIItem(monitoredClass);
+					monitoredItems.put(item, item.getLayout());
 					monitoredType.addItem(item);
 				}
 				VerticalLayout verticalLayout = new VerticalLayout(monitoredType);
@@ -103,13 +101,13 @@ public class MonitoredView extends VerticalLayout implements View {
 
 	private class MonitoredItemSetChangeListener implements Listener {
 
-		private Map<MonitoredItem, Collection<Component>> monitoredItems;
+		private Map<MonitoredUIItem, Layout> monitoredItems;
 
 		private Layout layout;
 
-		private MonitoredItem currentSelection;
+		private MonitoredUIItem currentSelection;
 
-		public MonitoredItemSetChangeListener(Map<MonitoredItem, Collection<Component>> monitoredItems, Layout layout) {
+		public MonitoredItemSetChangeListener(Map<MonitoredUIItem, Layout> monitoredItems, Layout layout) {
 			this.monitoredItems = monitoredItems;
 			this.layout = layout;
 			this.currentSelection = null;
@@ -120,17 +118,13 @@ public class MonitoredView extends VerticalLayout implements View {
 			if (event instanceof ValueChangeEvent) {
 				ComboBox source = (ComboBox)event.getSource();
 				Object value = source.getValue();
-				Collection<Component> components = this.monitoredItems.get(value);
+				Layout currentSelectionLayout = this.monitoredItems.get(value);
 				if (currentSelection != null && value != currentSelection) {
-					for (Component component : monitoredItems.get(currentSelection)) {
-						layout.removeComponent(component);
-					}
+					layout.removeComponent(monitoredItems.get(currentSelection));
 				}
-				currentSelection = (MonitoredItem)value;
-				if (CollectionUtils.isNotEmpty(components)) {
-					for (Component component : components) {
-						layout.addComponent(component);
-					}
+				currentSelection = (MonitoredUIItem)value;
+				if (currentSelectionLayout != null) {
+					layout.addComponent(currentSelectionLayout);
 				}
 			}
 
