@@ -1,5 +1,8 @@
 package org.shepherd.monitored.process.jmx;
 
+import org.shepherd.monitored.annotation.MonitoredDisplayName;
+import org.shepherd.monitored.annotation.ParamDisplayName;
+import org.shepherd.monitored.annotation.UICreationPoint;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -17,6 +20,7 @@ import javax.management.remote.JMXServiceURL;
  * @author DavidM
  *
  */
+@MonitoredDisplayName("JMX Process")
 public class JmxProcessImpl implements JmxProcess {
 
 	private static final String FRONT = "service:jmx:rmi:///jndi/rmi://";
@@ -38,6 +42,11 @@ public class JmxProcessImpl implements JmxProcess {
 		this(name, hostname, port, null, null);
 	}
 
+	@UICreationPoint(params = {@ParamDisplayName(index = 0, displayName = "Name"),
+							   @ParamDisplayName(index = 1, displayName = "Hostname"),
+							   @ParamDisplayName(index = 2, displayName = "Port"),
+							   @ParamDisplayName(index = 3, displayName = "Username"),
+							   @ParamDisplayName(index = 4, displayName = "Password", passwordField = true)})
 	public JmxProcessImpl(String name, String hostname, int port, String userName, String password) throws IOException {
 		Assert.notNull(name);
 		Assert.notNull(hostname);

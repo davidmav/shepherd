@@ -25,8 +25,12 @@ import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 import org.shepherd.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
 
 @SuppressWarnings("serial")
+@VaadinView(name = "Dashboard")
+@UIScope
 public final class DashboardView extends Panel implements View, DashboardEditListener {
 
 	public static final String EDIT_ID = "dashboard-edit";

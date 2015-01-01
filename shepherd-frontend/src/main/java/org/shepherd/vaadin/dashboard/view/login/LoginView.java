@@ -1,8 +1,5 @@
 package org.shepherd.vaadin.dashboard.view.login;
 
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
-
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -25,14 +22,21 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
+
 @SuppressWarnings("serial")
-public class LoginView extends VerticalLayout implements View{
+@VaadinView(name = "login")
+@UIScope
+public class LoginView extends VerticalLayout implements View {
 
-	private  TextField username;
+	private TextField username;
 
-	private  PasswordField password;
+	private PasswordField password;
 
-	private  Button loginButton;
+	private Button loginButton;
 
 	public LoginView() {
 		setSizeFull();
@@ -41,10 +45,8 @@ public class LoginView extends VerticalLayout implements View{
 		addComponent(loginForm);
 		setComponentAlignment(loginForm, Alignment.MIDDLE_CENTER);
 
-		Notification notification = new Notification(
-				"Welcome to Dashboard Demo");
-		notification
-		.setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
+		Notification notification = new Notification("Welcome to Dashboard Demo");
+		notification.setDescription("<span>This application is not real, it only demonstrates an application built with the <a href=\"https://vaadin.com\">Vaadin framework</a>.</span> <span>No username or password is required, just click the <b>Sign In</b> button to continue.</span>");
 		notification.setHtmlContentAllowed(true);
 		notification.setStyleName("tray dark small closable login-help");
 		notification.setPosition(Position.BOTTOM_CENTER);
@@ -86,10 +88,10 @@ public class LoginView extends VerticalLayout implements View{
 		fields.setComponentAlignment(loginButton, Alignment.BOTTOM_LEFT);
 
 		loginButton.addClickListener(new ClickListener() {
+
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				DashboardEventBus.post(new UserLoginRequestedEvent(username
-						.getValue(), password.getValue()));
+				DashboardEventBus.post(new UserLoginRequestedEvent(username.getValue(), password.getValue()));
 			}
 		});
 		return fields;
@@ -115,6 +117,5 @@ public class LoginView extends VerticalLayout implements View{
 
 	@Override
 	public void enter(ViewChangeEvent event) {}
-
 
 }

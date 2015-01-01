@@ -1,6 +1,17 @@
 package org.shepherd.vaadin.dashboard;
 
-import java.util.Locale;
+import com.google.common.eventbus.Subscribe;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.BrowserWindowResizeEvent;
+import com.vaadin.server.Page.BrowserWindowResizeListener;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 import org.shepherd.domain.User;
 import org.shepherd.monitored.service.UserService;
@@ -17,18 +28,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.vaadin.spring.VaadinUI;
+import org.vaadin.spring.navigator.SpringViewProvider;
 
-import com.google.common.eventbus.Subscribe;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.server.Page;
-import com.vaadin.server.Page.BrowserWindowResizeEvent;
-import com.vaadin.server.Page.BrowserWindowResizeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
+import java.util.Locale;
 
 @Theme("dashboard")
 //@Widgetset("org.shepherd.vaadin.dashboard.DashboardWidgetSet")
@@ -42,9 +44,12 @@ public final class DashboardUI extends UI {
 
 	@SuppressWarnings("unused")
 	private static ApplicationContext applicationContext;
-	
+
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private SpringViewProvider springViewProvider;
 
 	public static void main(String[] args) {
 		DashboardUI.applicationContext = SpringApplication.run(DashboardUI.class, args);
@@ -83,16 +88,18 @@ public final class DashboardUI extends UI {
 	 * privileges, main view is shown. Otherwise login view is shown.
 	 */
 	private void updateContent() {
-		
+
 		User user = (User)VaadinSession.getCurrent().getAttribute(User.class.getName());
-		
+
 		if (user != null && "admin".equals(user.getRole())) {
 			//Authenticated user
 			//			user = getDataProvider().authenticate("David Mavashev", "");
 			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 			setContent(new MainView());
 			removeStyleName("loginview");
-			getNavigator().navigateTo("Dashboard");
+			Navigator navigator = getNavigator();
+			navigator.addProvider(springViewProvider);
+			navigator.navigateTo("Dashboard");
 		} else {
 			setContent(new LoginView());
 			addStyleName("loginview");
@@ -108,15 +115,15 @@ public final class DashboardUI extends UI {
 
 	//dummy authentication
 	private User authenticate(String userName, String password) throws Exception {
-		
-		User user = this.userService.authenticate(userName,password);
-		
-		if ( !"admin".equals ( userName ) || !password.equals ( "admin" )){
-			throw new Exception ("Login failed !!!");
+
+		User user = this.userService.authenticate(userName, password);
+
+		if (!"admin".equals(userName) || !password.equals("admin")) {
+			throw new Exception("Login failed !!!");
 		}
-		
+
 		return user;
-		
+
 	}
 
 	//	@Subscribe

@@ -15,6 +15,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -23,6 +25,8 @@ import java.util.Date;
 import java.util.Set;
 
 @SuppressWarnings({ "serial", "unchecked" })
+@VaadinView(name = "Monitoring Tasks")
+@UIScope
 public final class MonitoringTasksView extends VerticalLayout implements View {
 
 	private final Table table;
