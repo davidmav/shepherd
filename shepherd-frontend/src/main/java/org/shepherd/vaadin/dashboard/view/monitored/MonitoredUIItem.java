@@ -1,5 +1,6 @@
 package org.shepherd.vaadin.dashboard.view.monitored;
 
+import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.PasswordField;
@@ -12,6 +13,7 @@ import org.shepherd.monitored.annotation.ParamDisplayName;
 import org.shepherd.monitored.annotation.UICreationPoint;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ import java.util.List;
 public class MonitoredUIItem {
 
 	private Class<Monitored> monitored;
+
+	private Constructor uiCreationPointConstructor;
 
 	private Layout layout;
 
@@ -50,6 +54,8 @@ public class MonitoredUIItem {
 					}
 					components.add(component);
 				}
+				this.uiCreationPointConstructor = constructor;
+				break;
 			}
 		}
 		return components;
@@ -57,6 +63,22 @@ public class MonitoredUIItem {
 
 	public Layout getLayout() {
 		return this.layout;
+	}
+
+	public Monitored createNewMonitoredInstance() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Object[] args = new Object[this.uiCreationPointConstructor.getParameterCount()];
+		int i = 0;
+		for (Component component : layout) {
+			AbstractTextField textField = (AbstractTextField)component;
+			if (this.uiCreationPointConstructor.getParameterTypes()[i] == String.class) {
+				args[i] = textField.getValue();
+			} else if (this.uiCreationPointConstructor.getParameterTypes()[i] == int.class || this.uiCreationPointConstructor.getParameterTypes()[i] == Integer.class) {
+				args[i] = Integer.parseInt(textField.getValue());
+			}
+			//TODO add more supported types
+			i++;
+		}
+		return (Monitored)uiCreationPointConstructor.newInstance(args);
 	}
 
 	@Override
