@@ -99,7 +99,9 @@ public final class DashboardUI extends UI {
 			//			user = getDataProvider().authenticate("David Mavashev", "");
 			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 			setContent(new MainView());
+			
 			removeStyleName(LoginView.STYLE_NAME);
+			addStyleName(MainView.STYLE_NAME);
 			
 			Navigator navigator = getNavigator();
 			navigator.addProvider(springViewProvider);
