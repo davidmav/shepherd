@@ -10,6 +10,7 @@ import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 import org.shepherd.vaadin.dashboard.view.MainView;
+import org.shepherd.vaadin.dashboard.view.dashboard.DashboardView;
 import org.shepherd.vaadin.dashboard.view.login.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +22,7 @@ import org.vaadin.spring.VaadinUI;
 import org.vaadin.spring.navigator.SpringViewProvider;
 
 import com.google.common.eventbus.Subscribe;
+import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.FontAwesome;
@@ -40,6 +42,7 @@ import com.vaadin.ui.Window;
 @EnableAutoConfiguration
 @ImportResource("META-INF/bootstrap/*")
 @VaadinUI
+@Theme("dashboard")
 public final class DashboardUI extends UI {
 
 	@SuppressWarnings("unused")
@@ -97,12 +100,10 @@ public final class DashboardUI extends UI {
 			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 			setContent(new MainView());
 			removeStyleName(LoginView.STYLE_NAME);
-			getNavigator().navigateTo(MainView.STYLE_NAME);
 			
-			removeStyleName("loginview");
 			Navigator navigator = getNavigator();
 			navigator.addProvider(springViewProvider);
-			navigator.navigateTo("Dashboard");
+			navigator.navigateTo(DashboardView.ID);
 		} else {
 			setContent(new LoginView());
 			addStyleName(LoginView.STYLE_NAME);

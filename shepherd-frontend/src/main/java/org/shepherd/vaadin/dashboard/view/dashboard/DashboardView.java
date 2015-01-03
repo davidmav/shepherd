@@ -43,6 +43,8 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 
 	public static final String EDIT_ID = "dashboard-edit";
 	public static final String TITLE_ID = "dashboard-title";
+	
+	public static final String ID = "Dashboard";
 
 	private Label titleLabel;
 	private NotificationsButton notificationsButton;
