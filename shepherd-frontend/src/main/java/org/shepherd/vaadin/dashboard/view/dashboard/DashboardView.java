@@ -1,5 +1,15 @@
 package org.shepherd.vaadin.dashboard.view.dashboard;
 
+import org.shepherd.domain.User;
+import org.shepherd.vaadin.dashboard.component.ProfilePreferencesWindow;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+import org.shepherd.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
+
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -7,6 +17,8 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Responsive;
+import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -15,18 +27,14 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
-import org.shepherd.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
-import org.vaadin.spring.UIScope;
-import org.vaadin.spring.navigator.VaadinView;
 
 @SuppressWarnings("serial")
 @VaadinView(name = "Dashboard")
@@ -35,12 +43,15 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 
 	public static final String EDIT_ID = "dashboard-edit";
 	public static final String TITLE_ID = "dashboard-title";
+	public static final String ID = "Dashboard";
 
 	private Label titleLabel;
 	private NotificationsButton notificationsButton;
 	private CssLayout dashboardPanels;
 	private final VerticalLayout root;
 	private Window notificationsWindow;
+	
+	private MenuItem settingsItem;
 
 	public DashboardView() {
 		addStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -111,13 +122,52 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		header.addComponent(titleLabel);
 
 		notificationsButton = buildNotificationsButton();
+
 		Component edit = buildEditButton();
-		HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
+		
+		Component userMenuComponent = buildUserMenu();
+		HorizontalLayout tools = new HorizontalLayout(userMenuComponent,notificationsButton, edit);
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 		header.addComponent(tools);
 
 		return header;
+	}
+
+	private User getCurrentUser() {
+		return (User)VaadinSession.getCurrent().getAttribute(User.class.getName());
+	}
+	
+	private Component buildUserMenu() {
+		
+		final MenuBar settings = new MenuBar();
+		final User user = getCurrentUser();
+		
+		settings.addStyleName("user-menu");
+		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.png"), null);
+		settingsItem.addItem("Edit Profile", new Command() {
+
+			@Override
+			public void menuSelected(final MenuItem selectedItem) {
+				ProfilePreferencesWindow.open(user, false);
+			}
+		});
+		settingsItem.addItem("Preferences", new Command() {
+
+			@Override
+			public void menuSelected(final MenuItem selectedItem) {
+				ProfilePreferencesWindow.open(user, true);
+			}
+		});
+		settingsItem.addSeparator();
+		settingsItem.addItem("Sign Out", new Command() {
+
+			@Override
+			public void menuSelected(final MenuItem selectedItem) {
+				DashboardEventBus.post(new UserLoggedOutEvent());
+			}
+		});
+		return settings;
 	}
 
 	private NotificationsButton buildNotificationsButton() {

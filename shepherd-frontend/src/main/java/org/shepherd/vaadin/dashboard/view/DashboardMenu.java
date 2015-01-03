@@ -82,34 +82,6 @@ public final class DashboardMenu extends CustomComponent {
 		return (User)VaadinSession.getCurrent().getAttribute(User.class.getName());
 	}
 
-	//	private Component buildUserMenu() {
-	//		final MenuBar settings = new MenuBar();
-	//		settings.addStyleName("user-menu");
-	//		settingsItem = settings.addItem("", new ThemeResource("img/shepherd-logo-300px.png"), null);
-	//		settingsItem.addItem("Edit Profile", new Command() {
-	//
-	//			@Override
-	//			public void menuSelected(final MenuItem selectedItem) {
-	//				ProfilePreferencesWindow.open(user, false);
-	//			}
-	//		});
-	//		settingsItem.addItem("Preferences", new Command() {
-	//
-	//			@Override
-	//			public void menuSelected(final MenuItem selectedItem) {
-	//				ProfilePreferencesWindow.open(user, true);
-	//			}
-	//		});
-	//		settingsItem.addSeparator();
-	//		settingsItem.addItem("Sign Out", new Command() {
-	//
-	//			@Override
-	//			public void menuSelected(final MenuItem selectedItem) {
-	//				DashboardEventBus.post(new UserLoggedOutEvent());
-	//			}
-	//		});
-	//		return settings;
-	//	}
 
 	private Component buildToggleButton() {
 		Button valoMenuToggleButton = new Button("Menu", new ClickListener() {

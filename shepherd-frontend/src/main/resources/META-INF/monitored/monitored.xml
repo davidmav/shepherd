@@ -6,5 +6,4 @@
 
 	<bean class=""/>
 	
-	<bean id="userService" class="org.shepherd.monitored.service.UserServiceImpl"></bean>
 </beans>

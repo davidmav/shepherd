@@ -1,3 +1,4 @@
+
 package org.shepherd.vaadin.dashboard.view.monitored;
 
 import com.vaadin.navigator.View;

@@ -1,25 +1,16 @@
 package org.shepherd.vaadin.dashboard;
 
-import com.google.common.eventbus.Subscribe;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.Page;
-import com.vaadin.server.Page.BrowserWindowResizeEvent;
-import com.vaadin.server.Page.BrowserWindowResizeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
+import java.util.Locale;
 
 import org.shepherd.domain.User;
 import org.shepherd.monitored.service.UserService;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.BrowserResizeEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoginRequestedEvent;
 import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 import org.shepherd.vaadin.dashboard.view.MainView;
+import org.shepherd.vaadin.dashboard.view.dashboard.DashboardView;
 import org.shepherd.vaadin.dashboard.view.login.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -30,16 +21,28 @@ import org.springframework.context.annotation.ImportResource;
 import org.vaadin.spring.VaadinUI;
 import org.vaadin.spring.navigator.SpringViewProvider;
 
-import java.util.Locale;
-
-@Theme("dashboard")
-//@Widgetset("org.shepherd.vaadin.dashboard.DashboardWidgetSet")
+import com.google.common.eventbus.Subscribe;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.BrowserWindowResizeEvent;
+import com.vaadin.server.Page.BrowserWindowResizeListener;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.Position;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 @Title("Shepherd Monitor")
 @SuppressWarnings("serial")
 @ComponentScan(basePackages = { "org.shepherd" })
 @EnableAutoConfiguration
 @ImportResource("META-INF/bootstrap/*")
 @VaadinUI
+@Theme("dashboard")
 public final class DashboardUI extends UI {
 
 	@SuppressWarnings("unused")
@@ -96,13 +99,16 @@ public final class DashboardUI extends UI {
 			//			user = getDataProvider().authenticate("David Mavashev", "");
 			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 			setContent(new MainView());
-			removeStyleName("loginview");
+			
+			removeStyleName(LoginView.STYLE_NAME);
+			addStyleName(MainView.STYLE_NAME);
+			
 			Navigator navigator = getNavigator();
 			navigator.addProvider(springViewProvider);
-			navigator.navigateTo("Dashboard");
+			navigator.navigateTo(DashboardView.ID);
 		} else {
 			setContent(new LoginView());
-			addStyleName("loginview");
+			addStyleName(LoginView.STYLE_NAME);
 		}
 	}
 
@@ -116,24 +122,23 @@ public final class DashboardUI extends UI {
 	//dummy authentication
 	private User authenticate(String userName, String password) throws Exception {
 
-		User user = this.userService.authenticate(userName, password);
+		User user = this.userService.authenticate(userName,password);
 
-		if (!"admin".equals(userName) || !password.equals("admin")) {
-			throw new Exception("Login failed !!!");
+		if ( !"admin".equals ( userName ) || !password.equals ( "admin" )){
+			getErrorNotification();
+			throw new Exception ("Login failed !!!");
 		}
-
 		return user;
-
 	}
 
-	//	@Subscribe
-	//	public void userLoggedOut(final UserLoggedOutEvent event) {
-	//		// When the user logs out, current VaadinSession gets closed and the
-	//		// page gets reloaded on the login screen. Do notice the this doesn't
-	//		// invalidate the current HttpSession.
-	//		VaadinSession.getCurrent().close();
-	//		Page.getCurrent().reload();
-	//	}
+	@Subscribe
+	public void userLoggedOut(final UserLoggedOutEvent event) {
+		// When the user logs out, current VaadinSession gets closed and the
+		// page gets reloaded on the login screen. Do notice the this doesn't
+		// invalidate the current HttpSession.
+		VaadinSession.getCurrent().close();
+		Page.getCurrent().reload();
+	}
 
 	@Subscribe
 	public void closeOpenWindows(final CloseOpenWindowsEvent event) {
@@ -144,5 +149,19 @@ public final class DashboardUI extends UI {
 
 	public static DashboardEventBus getDashboardEventbus() {
 		return ((DashboardUI)getCurrent()).dashboardEventbus;
+	}
+
+
+	public void getErrorNotification() {
+		Notification notification = new Notification(
+				"Wrong credentials");
+		notification
+		.setDescription("Username or password are incorrect");
+		notification.setHtmlContentAllowed(true);
+		notification.setStyleName("tray dark small closable login-help");
+		notification.setPosition(Position.BOTTOM_CENTER);
+		notification.show(Page.getCurrent());
+		notification.setIcon(FontAwesome.STOP);
+		notification.setDelayMsec(Notification.DELAY_FOREVER);
 	}
 }
