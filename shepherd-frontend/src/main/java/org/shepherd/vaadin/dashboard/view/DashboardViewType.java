@@ -15,7 +15,7 @@ public enum DashboardViewType {
 	MONITORED("Monitored", MonitoredView.class, FontAwesome.CLOUD, false),
 	MONITORINGTASKS("Monitoring Tasks", MonitoringTasksView.class, FontAwesome.EYE, false),
 	SETTINGS("Settings", SettingsView.class, FontAwesome.WRENCH, false),
-	LOGIN("Login", LoginView.class, FontAwesome.USER, false);
+	LOGIN("Sign in", LoginView.class, FontAwesome.USER, false);
 
 	private final String viewName;
 	private final Class<? extends View> viewClass;

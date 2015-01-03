@@ -25,7 +25,7 @@ import org.vaadin.spring.UIScope;
 import org.vaadin.spring.navigator.VaadinView;
 
 @SuppressWarnings("serial")
-@VaadinView(name = "Login")
+@VaadinView(name = "login")
 @UIScope
 public class LoginView extends VerticalLayout implements View {
 
