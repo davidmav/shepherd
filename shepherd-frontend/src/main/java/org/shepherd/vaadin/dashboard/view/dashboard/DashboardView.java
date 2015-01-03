@@ -1,15 +1,5 @@
 package org.shepherd.vaadin.dashboard.view.dashboard;
 
-import org.shepherd.domain.User;
-import org.shepherd.vaadin.dashboard.component.ProfilePreferencesWindow;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
-import org.shepherd.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
-import org.vaadin.spring.UIScope;
-import org.vaadin.spring.navigator.VaadinView;
-
 import com.vaadin.event.LayoutEvents.LayoutClickEvent;
 import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -36,6 +26,16 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import org.shepherd.domain.User;
+import org.shepherd.vaadin.dashboard.component.ProfilePreferencesWindow;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.CloseOpenWindowsEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
+import org.shepherd.vaadin.dashboard.view.dashboard.DashboardEdit.DashboardEditListener;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.navigator.VaadinView;
+
 @SuppressWarnings("serial")
 @VaadinView(name = "Dashboard")
 @UIScope
@@ -50,7 +50,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 	private CssLayout dashboardPanels;
 	private final VerticalLayout root;
 	private Window notificationsWindow;
-	
+
 	private MenuItem settingsItem;
 
 	public DashboardView() {
@@ -124,9 +124,9 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		notificationsButton = buildNotificationsButton();
 
 		Component edit = buildEditButton();
-		
-		Component userMenuComponent = buildUserMenu();
-		HorizontalLayout tools = new HorizontalLayout(userMenuComponent,notificationsButton, edit);
+
+		//		Component userMenuComponent = buildUserMenu();
+		HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 		header.addComponent(tools);
@@ -137,12 +137,12 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 	private User getCurrentUser() {
 		return (User)VaadinSession.getCurrent().getAttribute(User.class.getName());
 	}
-	
+
 	private Component buildUserMenu() {
-		
+
 		final MenuBar settings = new MenuBar();
 		final User user = getCurrentUser();
-		
+
 		settings.addStyleName("user-menu");
 		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.png"), null);
 		settingsItem.addItem("Edit Profile", new Command() {

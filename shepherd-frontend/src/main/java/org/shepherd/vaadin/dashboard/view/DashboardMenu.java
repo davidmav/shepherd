@@ -1,12 +1,5 @@
 package org.shepherd.vaadin.dashboard.view;
 
-import org.shepherd.domain.User;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
-import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
-
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.ThemeResource;
@@ -24,6 +17,14 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+
+import org.shepherd.domain.User;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.NotificationsCountUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.PostViewChangeEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.ProfileUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.ReportsCountUpdatedEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEvent.UserLoggedOutEvent;
+import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 
 /**
  * A responsive menu component providing user information and the controls for primary navigation between the views.
@@ -82,7 +83,6 @@ public final class DashboardMenu extends CustomComponent {
 		return (User)VaadinSession.getCurrent().getAttribute(User.class.getName());
 	}
 
-
 	private Component buildToggleButton() {
 		Button valoMenuToggleButton = new Button("Menu", new ClickListener() {
 
@@ -108,6 +108,9 @@ public final class DashboardMenu extends CustomComponent {
 		menuItemsLayout.setHeight(100.0f, Unit.PERCENTAGE);
 
 		for (final DashboardViewType view : DashboardViewType.values()) {
+			if (view == DashboardViewType.LOGIN) {
+				continue;
+			}
 			Component menuItemComponent = new ValoMenuItemButton(view);
 
 			//			if (view == DashboardViewType.REPORTS) {
@@ -142,9 +145,22 @@ public final class DashboardMenu extends CustomComponent {
 			//				reportsBadge.setId(REPORTS_BADGE_ID);
 			//				menuItemComponent = buildBadgeWrapper(menuItemComponent, reportsBadge);
 			//			}
-
 			menuItemsLayout.addComponent(menuItemComponent);
 		}
+
+		Button signOutButton = new Button();
+		signOutButton.setPrimaryStyleName("valo-menu-item");
+		signOutButton.setIcon(FontAwesome.USER);
+		signOutButton.setCaption("Sign Out");
+		signOutButton.addClickListener(new ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				DashboardEventBus.post(new UserLoggedOutEvent());
+
+			}
+		});
+		menuItemsLayout.addComponent(signOutButton);
 		return menuItemsLayout;
 
 	}
