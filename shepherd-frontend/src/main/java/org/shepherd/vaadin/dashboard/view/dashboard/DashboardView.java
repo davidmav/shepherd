@@ -138,8 +138,10 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		return (User)VaadinSession.getCurrent().getAttribute(User.class.getName());
 	}
 
+	@SuppressWarnings("unused")
 	private Component buildUserMenu() {
 
+		//TODO decide where to put that menu
 		final MenuBar settings = new MenuBar();
 		final User user = getCurrentUser();
 
