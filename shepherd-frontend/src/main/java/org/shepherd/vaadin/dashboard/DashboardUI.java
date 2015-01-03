@@ -1,6 +1,20 @@
 package org.shepherd.vaadin.dashboard;
 
-import java.util.Locale;
+import com.google.common.eventbus.Subscribe;
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.Page.BrowserWindowResizeEvent;
+import com.vaadin.server.Page.BrowserWindowResizeListener;
+import com.vaadin.server.Responsive;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.Position;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 
 import org.shepherd.domain.User;
 import org.shepherd.monitored.service.UserService;
@@ -21,21 +35,8 @@ import org.springframework.context.annotation.ImportResource;
 import org.vaadin.spring.VaadinUI;
 import org.vaadin.spring.navigator.SpringViewProvider;
 
-import com.google.common.eventbus.Subscribe;
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.server.FontAwesome;
-import com.vaadin.server.Page;
-import com.vaadin.server.Page.BrowserWindowResizeEvent;
-import com.vaadin.server.Page.BrowserWindowResizeListener;
-import com.vaadin.server.Responsive;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.Position;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
+import java.util.Locale;
+
 @Title("Shepherd Monitor")
 @SuppressWarnings("serial")
 @ComponentScan(basePackages = { "org.shepherd" })
@@ -99,10 +100,10 @@ public final class DashboardUI extends UI {
 			//			user = getDataProvider().authenticate("David Mavashev", "");
 			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
 			setContent(new MainView());
-			
+
 			removeStyleName(LoginView.STYLE_NAME);
 			addStyleName(MainView.STYLE_NAME);
-			
+
 			Navigator navigator = getNavigator();
 			navigator.addProvider(springViewProvider);
 			navigator.navigateTo(DashboardView.ID);
@@ -115,18 +116,20 @@ public final class DashboardUI extends UI {
 	@Subscribe
 	public void userLoginRequested(final UserLoginRequestedEvent event) throws Exception {
 		User user = authenticate(event.getUserName(), event.getPassword());
-		VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
-		updateContent();
+		if (user != null) {
+			VaadinSession.getCurrent().setAttribute(User.class.getName(), user);
+			updateContent();
+		}
 	}
 
 	//dummy authentication
 	private User authenticate(String userName, String password) throws Exception {
 
-		User user = this.userService.authenticate(userName,password);
+		User user = this.userService.authenticate(userName, password);
 
-		if ( !"admin".equals ( userName ) || !password.equals ( "admin" )){
+		if (!"admin".equals(userName) || !password.equals("admin")) {
 			getErrorNotification();
-			throw new Exception ("Login failed !!!");
+			return null;
 		}
 		return user;
 	}
@@ -151,17 +154,14 @@ public final class DashboardUI extends UI {
 		return ((DashboardUI)getCurrent()).dashboardEventbus;
 	}
 
-
 	public void getErrorNotification() {
-		Notification notification = new Notification(
-				"Wrong credentials");
-		notification
-		.setDescription("Username or password are incorrect");
+		Notification notification = new Notification("Wrong credentials");
+		notification.setDescription("Username or password are incorrect");
 		notification.setHtmlContentAllowed(true);
 		notification.setStyleName("tray dark small closable login-help");
 		notification.setPosition(Position.BOTTOM_CENTER);
 		notification.show(Page.getCurrent());
-		notification.setIcon(FontAwesome.STOP);
-		notification.setDelayMsec(Notification.DELAY_FOREVER);
+		notification.setIcon(FontAwesome.INFO);
+		notification.setDelayMsec(2000);
 	}
 }

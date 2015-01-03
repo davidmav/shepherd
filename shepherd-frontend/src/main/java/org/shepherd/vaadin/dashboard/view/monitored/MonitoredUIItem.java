@@ -7,6 +7,7 @@ import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.annotation.MonitoredDisplayName;
 import org.shepherd.monitored.annotation.ParamDisplayName;
@@ -70,12 +71,17 @@ public class MonitoredUIItem {
 		int i = 0;
 		for (Component component : layout) {
 			AbstractTextField textField = (AbstractTextField)component;
-			if (this.uiCreationPointConstructor.getParameterTypes()[i] == String.class) {
+			Class argType = this.uiCreationPointConstructor.getParameterTypes()[i];
+			if (argType != String.class) {
+				Object converted = ConvertUtils.convert(textField.getValue(), argType);
+				if (converted == String.class) {
+					throw new MonitoredArgumentClassNotSupportedException(argType);
+				} else {
+					args[i] = converted;
+				}
+			} else {
 				args[i] = textField.getValue();
-			} else if (this.uiCreationPointConstructor.getParameterTypes()[i] == int.class || this.uiCreationPointConstructor.getParameterTypes()[i] == Integer.class) {
-				args[i] = Integer.parseInt(textField.getValue());
 			}
-			//TODO add more supported types
 			i++;
 		}
 		return (Monitored)uiCreationPointConstructor.newInstance(args);
