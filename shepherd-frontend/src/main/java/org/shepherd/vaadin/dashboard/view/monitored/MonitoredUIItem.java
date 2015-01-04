@@ -16,6 +16,7 @@ import org.shepherd.monitored.annotation.UICreationPoint;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -42,6 +43,7 @@ public class MonitoredUIItem {
 
 	protected List<Component> initializeComponents() {
 		List<Component> components = new ArrayList<Component>();
+		components.add(new TextField("Id"));
 		Constructor<?>[] constructors = monitored.getConstructors();
 		for (Constructor<?> constructor : constructors) {
 			UICreationPoint uiCreationPoint = constructor.getAnnotation(UICreationPoint.class);
@@ -67,9 +69,18 @@ public class MonitoredUIItem {
 	}
 
 	public Monitored createNewMonitoredInstance() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Object[] arguments = getArguments();
+		return (Monitored)uiCreationPointConstructor.newInstance(arguments);
+	}
+
+	public Object[] getArguments() {
+		validateInput();
 		Object[] args = new Object[this.uiCreationPointConstructor.getParameterCount()];
 		int i = 0;
-		for (Component component : layout) {
+		Iterator<Component> iterator = layout.iterator();
+		iterator.next(); //Skiping Id field;
+		while (iterator.hasNext()) {
+			Component component = iterator.next();
 			AbstractTextField textField = (AbstractTextField)component;
 			Class argType = this.uiCreationPointConstructor.getParameterTypes()[i];
 			if (argType != String.class) {
@@ -84,7 +95,15 @@ public class MonitoredUIItem {
 			}
 			i++;
 		}
-		return (Monitored)uiCreationPointConstructor.newInstance(args);
+		return args;
+	}
+
+	protected void validateInput() throws IllegalArgumentException {
+		// TODO create input validation here
+	}
+
+	public Constructor<? extends Monitored> getConstructor() {
+		return this.uiCreationPointConstructor;
 	}
 
 	@Override
