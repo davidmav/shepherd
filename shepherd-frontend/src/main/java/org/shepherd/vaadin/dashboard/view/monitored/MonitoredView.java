@@ -1,4 +1,3 @@
-
 package org.shepherd.vaadin.dashboard.view.monitored;
 
 import com.vaadin.navigator.View;
@@ -16,6 +15,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -23,13 +23,20 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.MonitoredException;
+import org.shepherd.monitored.beans.definition.BeanDefinitionService;
+import org.shepherd.monitored.beans.registrar.BeanAlreadyExistsException;
+import org.shepherd.monitored.beans.registrar.BeanOfOtherClassAlreadyExistsException;
+import org.shepherd.monitored.beans.registrar.BeanRegistrarService;
+import org.shepherd.monitored.beans.registrar.UnableToSaveBeanException;
 import org.shepherd.monitored.provider.MonitoredProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.vaadin.spring.UIScope;
 import org.vaadin.spring.navigator.VaadinView;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +50,12 @@ public class MonitoredView extends VerticalLayout implements View {
 
 	@Autowired
 	private MonitoredProvider monitoredProvider;
+
+	@Autowired
+	private BeanRegistrarService beanRegistrarService;
+
+	@Autowired
+	private BeanDefinitionService beanDefinitionService;
 
 	public MonitoredView() {
 		setSizeFull();
@@ -82,6 +95,8 @@ public class MonitoredView extends VerticalLayout implements View {
 
 	private class AddNewMonitoredClickListener implements ClickListener {
 
+		private static final String SAVE_BUTTON_CAPTION = "save";
+		private static final String TEST_BUTTON_CAPTION = "test";
 		private Layout newTestSaveButtonsLayout;
 
 		@Override
@@ -100,7 +115,7 @@ public class MonitoredView extends VerticalLayout implements View {
 			Layout testSaveButtonsLayout = createTestSaveButtonsLayout();
 			newTestSaveButtonsLayout = testSaveButtonsLayout;
 			Layout comboBoxLayout = createComboBoxLayout(monitoredType, monitoredItems);
-			registerButtonListeners(newTestSaveButtonsLayout, monitoredType);
+			registerButtonListeners(newTestSaveButtonsLayout, monitoredType, newMonitoredWindow);
 			horizontalLayout.addComponents(comboBoxLayout, testSaveButtonsLayout);
 			newMonitoredWindow.setStyleName("monitored");
 			newMonitoredWindow.setContent(horizontalLayout);
@@ -112,9 +127,9 @@ public class MonitoredView extends VerticalLayout implements View {
 			UI.getCurrent().addWindow(newMonitoredWindow);
 		}
 
-		private void registerButtonListeners(Layout newTestSaveButtonsLayout, ComboBox monitoredType) {
+		private void registerButtonListeners(Layout newTestSaveButtonsLayout, ComboBox monitoredType, Window newMonitoredWindow) {
 			for (Component component : newTestSaveButtonsLayout) {
-				if (component instanceof Button && component.getId().equals("test")) {
+				if (isTestButton(component)) {
 					((Button)component).addClickListener(new ClickListener() {
 
 						@Override
@@ -127,10 +142,10 @@ public class MonitoredView extends VerticalLayout implements View {
 									if (monitored != null && monitored.test()) {
 										notification = new Notification("Test Successful");
 									} else {
-										notification = new Notification("Test Failed");
+										notification = new Notification("Test Failed", Notification.Type.WARNING_MESSAGE);
 									}
 								} catch (MonitoredException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-									notification = new Notification("Test Failed with error: " + e.getMessage());
+									notification = new Notification("Test Failed with error: " + e.getMessage(), Notification.Type.WARNING_MESSAGE);
 									LOGGER.error("Test Failed with error", e);
 								}
 								notification.show(UI.getCurrent().getPage());
@@ -138,18 +153,97 @@ public class MonitoredView extends VerticalLayout implements View {
 
 						}
 					});
-				} else if (component instanceof Button && component.getId().equals("save")) {
+				} else if (isSaveButton(component)) {
+					((Button)component).addClickListener(new ClickListener() {
 
+						@Override
+						public void buttonClick(ClickEvent event) {
+
+							MonitoredUIItem value = (MonitoredUIItem)monitoredType.getValue();
+							if (value != null) {
+								Notification notification = null;
+								Window overwriteWindow = null;
+								try {
+									Constructor<? extends Monitored> constructor = value.getConstructor();
+									Object[] arguments = value.getArguments();
+									TextField id = (TextField)value.getLayout().iterator().next();
+									BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition(id.getValue(), constructor, arguments);
+									overwriteWindow = createOverwriteWindow(newMonitoredWindow, beanDefinition);
+									beanRegistrarService.saveBeanDefinition(beanDefinition, false);
+									newMonitoredWindow.close();
+									notification = new Notification("Monitored Application Saved Successfully");
+								} catch (BeanAlreadyExistsException e) {
+									UI.getCurrent().addWindow(overwriteWindow);
+								} catch (BeanOfOtherClassAlreadyExistsException e) {
+									notification = new Notification("Monitored with the same Id but different type already exists", Notification.Type.WARNING_MESSAGE);
+
+								} catch (UnableToSaveBeanException e) {
+									notification = new Notification("Something wrong with the parameters: " + e.getMessage(), Notification.Type.WARNING_MESSAGE);
+								} catch (IllegalArgumentException e) {
+									notification = new Notification("Something wrong with the parameters: " + e.getMessage(), Notification.Type.WARNING_MESSAGE);
+								}
+								if (notification != null) {
+									notification.show(UI.getCurrent().getPage());
+								}
+							}
+
+						}
+
+						private Window createOverwriteWindow(Window newMonitoredWindow, final BeanDefinition beanDefinition) {
+							Window overwriteWindow = new Window(" Monitored with the same Id already exists ");
+							overwriteWindow.setIcon(FontAwesome.INFO);
+							overwriteWindow.setModal(true);
+							overwriteWindow.setResizable(false);
+							VerticalLayout verticalLayout = new VerticalLayout();
+							HorizontalLayout horizontalLayout = new HorizontalLayout();
+							Label label = new Label("Monitored with the same Id already exists, overwrite?");
+							Button noButton = new Button("No");
+							noButton.addClickListener(new ClickListener() {
+
+								@Override
+								public void buttonClick(ClickEvent event) {
+									overwriteWindow.close();
+								}
+							});
+							Button yesButton = new Button("Yes");
+							yesButton.addClickListener(new ClickListener() {
+
+								@Override
+								public void buttonClick(ClickEvent event) {
+									beanRegistrarService.saveBeanDefinition(beanDefinition, true);
+									overwriteWindow.close();
+									Notification notification = new Notification("Monitored Application Saved Successfully");
+									notification.show(UI.getCurrent().getPage());
+
+								}
+							});
+							horizontalLayout.addComponents(yesButton, noButton);
+							horizontalLayout.setSpacing(true);
+							verticalLayout.addComponents(label, horizontalLayout);
+							verticalLayout.setSpacing(true);
+							verticalLayout.setMargin(true);
+							overwriteWindow.setContent(verticalLayout);
+							return overwriteWindow;
+						}
+					});
 				}
 			}
 
 		}
 
+		private boolean isSaveButton(Component component) {
+			return component instanceof Button && component.getId().equals(SAVE_BUTTON_CAPTION);
+		}
+
+		private boolean isTestButton(Component component) {
+			return component instanceof Button && component.getId().equals(TEST_BUTTON_CAPTION);
+		}
+
 		private Layout createTestSaveButtonsLayout() {
 			Button testMonitored = new Button("Test");
-			testMonitored.setId("test");
+			testMonitored.setId(TEST_BUTTON_CAPTION);
 			Button saveMonitored = new Button("Save");
-			saveMonitored.setId("save");
+			saveMonitored.setId(SAVE_BUTTON_CAPTION);
 			HorizontalLayout layout = new HorizontalLayout(testMonitored, saveMonitored);
 			layout.setCaption("");
 			layout.setSpacing(true);
