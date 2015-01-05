@@ -1,6 +1,8 @@
 package org.shepherd.monitored;
 
 /**
+ * Monitored interface, implementation must have at least 1 constructor with (String id) annotated with @UICreationPoint, id must
+ * be first arg. //TODO - we need to get rid of this constraint - will be redesigned.
  * 
  * @author DavidM
  *
@@ -8,6 +10,16 @@ package org.shepherd.monitored;
 public interface Monitored {
 
 	/**
+	 * A unique identifier for the Monitored Application
+	 * 
+	 * @since Jan 4, 2015
+	 * @author davidm
+	 * @return
+	 */
+	public String getId();
+
+	/**
+	 * A name for the Monitored Application, not unique
 	 * 
 	 * @return
 	 */

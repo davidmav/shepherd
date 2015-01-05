@@ -43,7 +43,6 @@ public class MonitoredUIItem {
 
 	protected List<Component> initializeComponents() {
 		List<Component> components = new ArrayList<Component>();
-		components.add(new TextField("Id"));
 		Constructor<?>[] constructors = monitored.getConstructors();
 		for (Constructor<?> constructor : constructors) {
 			UICreationPoint uiCreationPoint = constructor.getAnnotation(UICreationPoint.class);
@@ -78,7 +77,6 @@ public class MonitoredUIItem {
 		Object[] args = new Object[this.uiCreationPointConstructor.getParameterCount()];
 		int i = 0;
 		Iterator<Component> iterator = layout.iterator();
-		iterator.next(); //Skiping Id field;
 		while (iterator.hasNext()) {
 			Component component = iterator.next();
 			AbstractTextField textField = (AbstractTextField)component;

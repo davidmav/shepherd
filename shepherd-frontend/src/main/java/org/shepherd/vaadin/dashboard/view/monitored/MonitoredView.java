@@ -29,6 +29,7 @@ import org.shepherd.monitored.beans.registrar.BeanOfOtherClassAlreadyExistsExcep
 import org.shepherd.monitored.beans.registrar.BeanRegistrarService;
 import org.shepherd.monitored.beans.registrar.UnableToSaveBeanException;
 import org.shepherd.monitored.provider.MonitoredProvider;
+import org.shepherd.vaadin.dashboard.view.monitored.table.MonitoredTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 @SuppressWarnings("serial")
 @VaadinView(name = "Monitored")
@@ -57,12 +60,19 @@ public class MonitoredView extends VerticalLayout implements View {
 	@Autowired
 	private BeanDefinitionService beanDefinitionService;
 
+	@Autowired
+	private MonitoredTable monitoredTable;
+
 	public MonitoredView() {
-		setSizeFull();
 		addStyleName("monitored");
+		setSpacing(false);
 
-		addComponent(buildHeader());
+	}
 
+	@PostConstruct
+	private void init() {
+		monitoredTable.refreshTable();
+		addComponents(buildHeader(), monitoredTable);
 	}
 
 	private Component buildHeader() {
@@ -172,6 +182,7 @@ public class MonitoredView extends VerticalLayout implements View {
 									beanRegistrarService.saveBeanDefinition(beanDefinition, false);
 									newMonitoredWindow.close();
 									notification = new Notification("Monitored Application Saved Successfully");
+									monitoredTable.refreshTable();
 								} catch (BeanAlreadyExistsException e) {
 									UI.getCurrent().addWindow(overwriteWindow);
 								} catch (BeanOfOtherClassAlreadyExistsException e) {
@@ -215,6 +226,7 @@ public class MonitoredView extends VerticalLayout implements View {
 									newMonitoredWindow.close();
 									Notification notification = new Notification("Monitored Application Saved Successfully");
 									notification.show(UI.getCurrent().getPage());
+									monitoredTable.refreshTable();
 
 								}
 							});
