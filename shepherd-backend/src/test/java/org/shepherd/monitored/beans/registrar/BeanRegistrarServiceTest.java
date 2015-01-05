@@ -45,7 +45,7 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 				break;
 			}
 		}
-		Object[] args = new Object[] { "testName", "localhost", 2222, null, null };
+		Object[] args = new Object[] { "test", "testName", "localhost", 2222, null, null };
 		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
 		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == false);
 		beanRegistrarService.saveBeanDefinition(beanDefinition, false);
@@ -70,7 +70,7 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 				break;
 			}
 		}
-		Object[] args = new Object[] { "secondBean", "localhost", 2222, null, null };
+		Object[] args = new Object[] { "test", "secondBean", "localhost", 2222, null, null };
 		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
 		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == true);
 		beanRegistrarService.saveBeanDefinition(beanDefinition, true);
@@ -92,7 +92,7 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 				break;
 			}
 		}
-		Object[] args = new Object[] { "anotherBean", "localhost", 3333, null, null };
+		Object[] args = new Object[] { "test", "anotherBean", "localhost", 3333, null, null };
 		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
 		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == true);
 		beanRegistrarService.saveBeanDefinition(beanDefinition, false);
@@ -127,6 +127,11 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 		@Override
 		public boolean test() throws MonitoredException {
 			return false;
+		}
+
+		@Override
+		public String getId() {
+			return null;
 		}
 
 	}
