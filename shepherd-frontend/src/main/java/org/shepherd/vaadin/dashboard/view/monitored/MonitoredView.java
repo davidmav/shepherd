@@ -212,6 +212,7 @@ public class MonitoredView extends VerticalLayout implements View {
 								public void buttonClick(ClickEvent event) {
 									beanRegistrarService.saveBeanDefinition(beanDefinition, true);
 									overwriteWindow.close();
+									newMonitoredWindow.close();
 									Notification notification = new Notification("Monitored Application Saved Successfully");
 									notification.show(UI.getCurrent().getPage());
 
