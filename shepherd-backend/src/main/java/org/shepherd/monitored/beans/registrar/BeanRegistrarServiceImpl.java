@@ -28,6 +28,10 @@ import javax.xml.transform.TransformerException;
 @Service
 public class BeanRegistrarServiceImpl implements BeanRegistrarService, ApplicationContextAware {
 
+	private static final String XML_EXTENSION = ".xml";
+
+	private static final String ID = "id";
+
 	private static final String WORK_MONITORINGTASKS_BEANS_LOCATION = "./work/monitoringtasks/";
 
 	private static final String WORK_MONITORED_BEANS_LOCATION = "./work/monitored/";
@@ -49,13 +53,14 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 
 	@Override
 	public boolean beanExists(BeanDefinition beanDefintion) {
-		return applicationContext.containsBeanDefinition(beanDefintion.getAttribute("id").toString());
+		return applicationContext.containsBean(beanDefintion.getAttribute(ID).toString());
 	}
 
 	@Override
 	public void saveBeanDefinition(BeanDefinition beanDefinition, boolean overwrite) {
-		String id = beanDefinition.getAttribute("id").toString();
-		if (beanExists(beanDefinition)) {
+		String id = beanDefinition.getAttribute(ID).toString();
+		boolean beanExists = beanExists(beanDefinition);
+		if (beanExists) {
 			Object bean = this.applicationContext.getBean(id);
 			String beanClassName = beanDefinition.getBeanClassName();
 			if (beanClassName.equals(bean.getClass().getName())) {
@@ -72,15 +77,39 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 				throw new BeanOfOtherClassAlreadyExistsException();
 			}
 		}
-
 		LOGGER.debug("Passed the tests, saving the bean now");
-		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)applicationContext.getBeanFactory();
-		beanFactory.registerBeanDefinition(id, beanDefinition);
 
+		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)applicationContext.getBeanFactory();
+		BeanDefinition previousBeanDefinition = null;
+		if (beanExists && overwrite) {
+			LOGGER.debug("Looking for previous bean definition");
+			Object bean = this.applicationContext.getBean(id);
+			if (!beanFactory.containsBeanDefinition(id)) {
+				previousBeanDefinition = ((DefaultListableBeanFactory)beanFactory.getParentBeanFactory()).getBeanDefinition(id);
+			} else {
+				previousBeanDefinition = beanFactory.getBeanDefinition(id);
+			}
+			LOGGER.debug("Destroying previous bean definition");
+			beanFactory.destroyBean(bean);
+		}
+
+		try {
+			LOGGER.debug("Registering new bean definition");
+			beanFactory.registerBeanDefinition(id, beanDefinition);
+			applicationContext.getBean(id);
+		} catch (Exception e) {
+			LOGGER.debug("Error occured, rolling back");
+			beanFactory.removeBeanDefinition(id);
+			if (previousBeanDefinition != null) {
+				beanFactory.registerBeanDefinition(id, previousBeanDefinition);
+			}
+			throw e;
+		}
+		LOGGER.debug("Bean successfully created, saving monitored context to the filesystem");
 		FileOutputStream os = null;
 		try {
 			Class<?> beanClass = Class.forName(beanDefinition.getBeanClassName());
-			String beanFile = id + ".xml";
+			String beanFile = id + XML_EXTENSION;
 			File directory = null;
 			if (Monitored.class.isAssignableFrom(beanClass)) {
 				directory = new File(WORK_MONITORED_BEANS_LOCATION);
@@ -90,6 +119,9 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 			}
 			directory.mkdirs();
 			File beanXml = new File(directory, beanFile);
+			if (beanXml.exists()) {
+				beanXml.delete();
+			}
 			os = new FileOutputStream(beanXml);
 			Element marshaledBeanDefinition = marshalService.marshalBeanDefinition(beanDefinition);
 			marshalService.writeElement(marshaledBeanDefinition, os);
