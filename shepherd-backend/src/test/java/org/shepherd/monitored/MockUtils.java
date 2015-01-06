@@ -1,9 +1,5 @@
 package org.shepherd.monitored;
 
-import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.shepherd.monitored.process.jmx.JmxProcess;
-
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,6 +12,12 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
+
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.shepherd.monitored.port.Port;
+import org.shepherd.monitored.port.Port.PortType;
+import org.shepherd.monitored.process.jmx.JmxProcess;
 
 public class MockUtils {
 
@@ -58,6 +60,18 @@ public class MockUtils {
 			e.printStackTrace();
 		}
 		EasyMock.replay(mBeanServerConnectionMock, jmxConnectorMock, mock);
+		return mock;
+	}
+
+	public static Port createPortMock() {
+		
+		Port mock = EasyMock.createMock(Port.class);
+		EasyMock.expect(mock.getHostname()).andReturn("localhost").anyTimes();
+		EasyMock.expect(mock.getPort()).andReturn(8080).anyTimes();
+		EasyMock.expect(mock.getPortType()).andReturn(PortType.TCP).anyTimes();
+		
+		EasyMock.replay(mock);
+		
 		return mock;
 	}
 
