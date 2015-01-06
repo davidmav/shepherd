@@ -131,6 +131,8 @@ public class MonitoredView extends VerticalLayout implements View {
 			newMonitoredWindow.setContent(horizontalLayout);
 			newMonitoredWindow.setModal(true);
 			newMonitoredWindow.setResizable(false);
+			newMonitoredWindow.setPositionY(event.getClientY() - event.getRelativeY() + 50);
+			newMonitoredWindow.setPositionX(event.getClientX() - event.getClientX() + 400);
 			//			newMonitoredWindow.setDraggable(false);
 			//			newMonitoredWindow.setHeight(500, Unit.PIXELS);
 			//			newMonitoredWindow.setWidth(600, Unit.PIXELS);
