@@ -15,7 +15,7 @@ public class MonitoredArgumentClassNotSupportedException extends IllegalArgument
 
 	private static final String MESSAGE = "{0} is not supported and cannot be converted from String";
 
-	public MonitoredArgumentClassNotSupportedException(Class clas) {
+	public MonitoredArgumentClassNotSupportedException(Class<?> clas) {
 		super(MessageFormat.format(MESSAGE, clas.getName()));
 	}
 

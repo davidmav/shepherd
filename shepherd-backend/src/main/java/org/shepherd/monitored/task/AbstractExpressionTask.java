@@ -48,13 +48,13 @@ public abstract class AbstractExpressionTask<T extends Monitored> implements Mon
 
 	@Override
 	public MonitoringOutput<T> runMonitor() {
-		EvaluationContext evaluationContext = getEvaluationContext();
+		EvaluationContext currentEvaluationContext = getEvaluationContext();
 		Severity currentSeverity = Severity.INFO;
 		Object rootObject = getRootObject();
 		StringBuilder messageBuilder = new StringBuilder();
-		for (Expression expression : expressions.keySet()) {
-			Severity severity = expressions.get(expression);
-			Boolean value = expression.getValue(evaluationContext, rootObject, Boolean.class);
+		for (Expression expression : this.expressions.keySet()) {
+			Severity severity = this.expressions.get(expression);
+			Boolean value = expression.getValue(currentEvaluationContext, rootObject, Boolean.class);
 			if (!value && severity.ordinal() < currentSeverity.ordinal()) {
 				currentSeverity = severity;
 				String currentMessage = MessageFormat.format(OUTPUT_MESSAGE, expression.getExpressionString());
@@ -65,18 +65,18 @@ public abstract class AbstractExpressionTask<T extends Monitored> implements Mon
 				}
 			}
 		}
-		return new SimpleMonitoringOutput(getMonitored(), this, currentSeverity, messageBuilder.toString());
+		return new SimpleMonitoringOutput<T>(getMonitored(), this, currentSeverity, messageBuilder.toString());
 	}
 
 	protected abstract Object getRootObject() throws RootObjectNotCreatedException;
 
 	protected EvaluationContext getEvaluationContext() {
 		if (this.evaluationContext == null) {
-			StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
+			StandardEvaluationContext newEvaluationContext = new StandardEvaluationContext();
 			if (this.applicationContext != null) {
-				evaluationContext.setBeanResolver(new BeanFactoryResolver(this.applicationContext.getBeanFactory()));
+				newEvaluationContext.setBeanResolver(new BeanFactoryResolver(this.applicationContext.getBeanFactory()));
 			}
-			this.evaluationContext = evaluationContext;
+			this.evaluationContext = newEvaluationContext;
 		}
 		return this.evaluationContext;
 	}
@@ -90,7 +90,7 @@ public abstract class AbstractExpressionTask<T extends Monitored> implements Mon
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((expressions == null) ? 0 : expressions.hashCode());
+		result = prime * result + ((this.expressions == null) ? 0 : this.expressions.hashCode());
 		result = prime * result + ((getMonitored() == null) ? 0 : getMonitored().hashCode());
 		return result;
 	}
@@ -106,12 +106,12 @@ public abstract class AbstractExpressionTask<T extends Monitored> implements Mon
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		AbstractExpressionTask other = (AbstractExpressionTask)obj;
-		if (expressions == null) {
+		AbstractExpressionTask<?> other = (AbstractExpressionTask<?>)obj;
+		if (this.expressions == null) {
 			if (other.expressions != null) {
 				return false;
 			}
-		} else if (!expressions.equals(other.expressions)) {
+		} else if (!this.expressions.equals(other.expressions)) {
 			return false;
 		}
 		if (getMonitored() == null) {

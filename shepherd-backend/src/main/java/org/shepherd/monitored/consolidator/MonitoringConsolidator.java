@@ -23,7 +23,7 @@ public interface MonitoringConsolidator {
 	 * @param monitoringOutput
 	 */
 	@Loggable(Loggable.DEBUG)
-	public void insertOutput(MonitoringOutput monitoringOutput);
+	public void insertOutput(MonitoringOutput<?> monitoringOutput);
 
 	/**
 	 * 
@@ -33,7 +33,7 @@ public interface MonitoringConsolidator {
 	 * @return
 	 */
 	@Loggable(Loggable.DEBUG)
-	public MonitoringOutput getLatestOutput(MonitoringTask monitoringTask);
+	public <T extends Monitored> MonitoringOutput<T> getLatestOutput(MonitoringTask<T> monitoringTask);
 
 	/**
 	 * 
@@ -53,6 +53,6 @@ public interface MonitoringConsolidator {
 	 * @return
 	 */
 	@Loggable
-	public Collection<MonitoringOutput> getAllRecentMonitoringOutputs(Monitored monitored);
+	public <T extends Monitored> Collection<MonitoringOutput<T>> getAllRecentMonitoringOutputs(T monitored);
 
 }

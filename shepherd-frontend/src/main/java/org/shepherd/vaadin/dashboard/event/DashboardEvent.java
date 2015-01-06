@@ -17,11 +17,11 @@ public abstract class DashboardEvent {
 		}
 
 		public String getUserName() {
-			return userName;
+			return this.userName;
 		}
 
 		public String getPassword() {
-			return password;
+			return this.password;
 		}
 	}
 
@@ -45,7 +45,7 @@ public abstract class DashboardEvent {
 		}
 
 		public int getCount() {
-			return count;
+			return this.count;
 		}
 
 	}
@@ -59,7 +59,7 @@ public abstract class DashboardEvent {
 		}
 
 		public DashboardViewType getView() {
-			return view;
+			return this.view;
 		}
 	}
 

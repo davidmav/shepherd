@@ -23,51 +23,53 @@ import java.util.TreeSet;
  */
 public class HistoricalMonitoringConsolidator implements MonitoringConsolidator {
 
-	protected Map<MonitoringTask, SortedSet<MonitoringOutput>> outputs;
+	protected Map<MonitoringTask<? extends Monitored>, SortedSet<MonitoringOutput<? extends Monitored>>> outputs;
 
-	protected Map<Monitored, Set<MonitoringTask>> monitoringTasks;
+	protected Map<Monitored, Set<MonitoringTask<? extends Monitored>>> monitoringTasks;
 
 	public HistoricalMonitoringConsolidator() {
-		this.outputs = new HashMap<MonitoringTask, SortedSet<MonitoringOutput>>();
-		this.monitoringTasks = new HashMap<Monitored, Set<MonitoringTask>>();
+		this.outputs = new HashMap<MonitoringTask<? extends Monitored>, SortedSet<MonitoringOutput<? extends Monitored>>>();
+		this.monitoringTasks = new HashMap<Monitored, Set<MonitoringTask<? extends Monitored>>>();
 	}
 
 	@Override
-	public void insertOutput(MonitoringOutput monitoringOutput) {
+	public void insertOutput(MonitoringOutput<? extends Monitored> monitoringOutput) {
 		addMonitoringOutputToOutputs(monitoringOutput);
 		addMonitoringTask(monitoringOutput);
 	}
 
-	protected void addMonitoringTask(MonitoringOutput monitoringOutput) {
-		Set<MonitoringTask> monitoredMonitoringTasks = monitoringTasks.get(monitoringOutput.getMonitored());
+	protected void addMonitoringTask(MonitoringOutput<? extends Monitored> monitoringOutput) {
+		Set<MonitoringTask<? extends Monitored>> monitoredMonitoringTasks = this.monitoringTasks.get(monitoringOutput.getMonitored());
 		if (monitoredMonitoringTasks == null) {
-			monitoredMonitoringTasks = new HashSet<MonitoringTask>();
-			monitoringTasks.put(monitoringOutput.getMonitored(), monitoredMonitoringTasks);
+			monitoredMonitoringTasks = new HashSet<MonitoringTask<?>>();
+			this.monitoringTasks.put(monitoringOutput.getMonitored(), monitoredMonitoringTasks);
 		}
 		monitoredMonitoringTasks.add(monitoringOutput.getMonitoringTask());
 	}
 
-	protected void addMonitoringOutputToOutputs(MonitoringOutput monitoringOutput) {
-		SortedSet<MonitoringOutput> currentTaskOutputs = this.outputs.get(monitoringOutput.getMonitoringTask());
+	protected void addMonitoringOutputToOutputs(MonitoringOutput<? extends Monitored> monitoringOutput) {
+		SortedSet<MonitoringOutput<?>> currentTaskOutputs = this.outputs.get(monitoringOutput.getMonitoringTask());
 		if (currentTaskOutputs == null) {
-			currentTaskOutputs = new TreeSet<MonitoringOutput>(new TimestampMonitoringOutputComparator());
+			currentTaskOutputs = new TreeSet<MonitoringOutput<?>>(new TimestampMonitoringOutputComparator());
 			this.outputs.put(monitoringOutput.getMonitoringTask(), currentTaskOutputs);
 		}
 		currentTaskOutputs.add(monitoringOutput);
 	}
 
+	//This is save casting
+	@SuppressWarnings("unchecked")
 	@Override
-	public MonitoringOutput getLatestOutput(MonitoringTask monitoringTask) {
-		SortedSet<MonitoringOutput> monitoringOutputs = this.outputs.get(monitoringTask);
-		return monitoringOutputs.last();
+	public <T extends Monitored> MonitoringOutput<T> getLatestOutput(MonitoringTask<T> monitoringTask) {
+		SortedSet<MonitoringOutput<? extends Monitored>> monitoringOutputs = this.outputs.get(monitoringTask);
+		return (MonitoringOutput<T>)monitoringOutputs.last();
 	}
 
 	@Override
 	public Severity getCurrentMonitoredSeverity(Monitored monitored) {
-		Set<MonitoringTask> monitoringTasks = this.monitoringTasks.get(monitored);
+		Set<MonitoringTask<? extends Monitored>> monitoredMonitoringTasks = this.monitoringTasks.get(monitored);
 		Severity currentSeverity = Severity.INFO;
-		for (MonitoringTask monitoringTask : monitoringTasks) {
-			MonitoringOutput lastOutput = this.outputs.get(monitoringTask).last();
+		for (MonitoringTask<? extends Monitored> monitoringTask : monitoredMonitoringTasks) {
+			MonitoringOutput<? extends Monitored> lastOutput = this.outputs.get(monitoringTask).last();
 			if (lastOutput != null && lastOutput.getSeverity().ordinal() < currentSeverity.ordinal()) {
 				currentSeverity = lastOutput.getSeverity();
 			}
@@ -75,23 +77,27 @@ public class HistoricalMonitoringConsolidator implements MonitoringConsolidator 
 		return currentSeverity;
 	}
 
+	//This is save casting
+	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<MonitoringOutput> getAllRecentMonitoringOutputs(Monitored monitored) {
-		Collection<MonitoringOutput> output = new ArrayList<MonitoringOutput>();
-		Set<MonitoringTask> set = this.monitoringTasks.get(monitored);
-		for (MonitoringTask monitoringTask : set) {
-			MonitoringOutput last = this.outputs.get(monitoringTask).last();
+	public <T extends Monitored> Collection<MonitoringOutput<T>> getAllRecentMonitoringOutputs(T monitored) {
+		Collection<MonitoringOutput<T>> output = new ArrayList<MonitoringOutput<T>>();
+		Set<MonitoringTask<? extends Monitored>> set = this.monitoringTasks.get(monitored);
+		for (MonitoringTask<? extends Monitored> monitoringTask : set) {
+			MonitoringOutput<? extends Monitored> last = this.outputs.get(monitoringTask).last();
 			if (last != null) {
-				output.add(last);
+				output.add((MonitoringOutput<T>)last);
 			}
 		}
 		return Collections.unmodifiableCollection(output);
 	}
 
-	private class TimestampMonitoringOutputComparator implements Comparator<MonitoringOutput> {
+	private class TimestampMonitoringOutputComparator implements Comparator<MonitoringOutput<?>> {
+
+		public TimestampMonitoringOutputComparator() {}
 
 		@Override
-		public int compare(MonitoringOutput o1, MonitoringOutput o2) {
+		public int compare(MonitoringOutput<?> o1, MonitoringOutput<?> o2) {
 			return o1.getTimestamp().compareTo(o2.getTimestamp());
 		}
 

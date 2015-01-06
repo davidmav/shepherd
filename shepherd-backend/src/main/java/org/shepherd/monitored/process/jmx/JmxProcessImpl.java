@@ -27,6 +27,8 @@ public class JmxProcessImpl implements JmxProcess {
 	private static final String FRONT = "service:jmx:rmi:///jndi/rmi://";
 	private static final String BACK = "/jmxrmi";
 
+	protected String id;
+
 	protected String name;
 
 	protected String hostname;
@@ -39,19 +41,17 @@ public class JmxProcessImpl implements JmxProcess {
 
 	Map<String, String[]> environment;
 
-	public JmxProcessImpl(String name, String hostname, int port) throws IOException {
-		this(name, hostname, port, null, null);
+	public JmxProcessImpl(String id, String name, String hostname, int port) throws IOException {
+		this(id, name, hostname, port, null, null);
 	}
 
-	@UICreationPoint(params = { @ParamDisplayName(index = 0, displayName = "Name"), 
-								@ParamDisplayName(index = 1, displayName = "Hostname"), 
-								@ParamDisplayName(index = 2, displayName = "Port"),
-								@ParamDisplayName(index = 3, displayName = "Username"), 
-								@ParamDisplayName(index = 4, displayName = "Password", passwordField = true) })
-	public JmxProcessImpl(String name, String hostname, int port, String userName, String password) throws IOException {
+	@UICreationPoint(params = { @ParamDisplayName(index = 0, displayName = "Id"), @ParamDisplayName(index = 1, displayName = "Name"), @ParamDisplayName(index = 2, displayName = "Hostname"),
+			@ParamDisplayName(index = 3, displayName = "Port"), @ParamDisplayName(index = 4, displayName = "Username"), @ParamDisplayName(index = 5, displayName = "Password", passwordField = true) })
+	public JmxProcessImpl(String id, String name, String hostname, int port, String userName, String password) throws IOException {
 		Assert.notNull(name);
 		Assert.notNull(hostname);
 		Assert.isTrue(port >= 1 && port <= 65535);
+		this.id = id;
 		this.name = name;
 		this.hostname = hostname;
 		this.port = port;
@@ -65,33 +65,38 @@ public class JmxProcessImpl implements JmxProcess {
 	}
 
 	@Override
+	public String getId() {
+		return this.id;
+	}
+
+	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	@Override
 	public int getPort() {
-		return port;
+		return this.port;
 	}
 
 	@Override
 	public String getHostname() {
-		return hostname;
+		return this.hostname;
 	}
 
 	@Override
 	public JMXConnector getServerConnection() throws IOException {
 		JMXServiceURL jMXServiceURL = new JMXServiceURL(this.url);
-		return JMXConnectorFactory.connect(jMXServiceURL, environment);
+		return JMXConnectorFactory.connect(jMXServiceURL, this.environment);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + port;
+		result = prime * result + ((this.hostname == null) ? 0 : this.hostname.hashCode());
+		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result + this.port;
 		return result;
 	}
 
@@ -107,21 +112,21 @@ public class JmxProcessImpl implements JmxProcess {
 			return false;
 		}
 		JmxProcessImpl other = (JmxProcessImpl)obj;
-		if (hostname == null) {
+		if (this.hostname == null) {
 			if (other.hostname != null) {
 				return false;
 			}
-		} else if (!hostname.equals(other.hostname)) {
+		} else if (!this.hostname.equals(other.hostname)) {
 			return false;
 		}
-		if (name == null) {
+		if (this.name == null) {
 			if (other.name != null) {
 				return false;
 			}
-		} else if (!name.equals(other.name)) {
+		} else if (!this.name.equals(other.name)) {
 			return false;
 		}
-		if (port != other.port) {
+		if (this.port != other.port) {
 			return false;
 		}
 		return true;

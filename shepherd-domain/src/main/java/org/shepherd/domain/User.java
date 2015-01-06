@@ -1,104 +1,105 @@
 package org.shepherd.domain;
 
 public final class User {
-    private String role;
-    private String firstName;
-    private String lastName;
-    private String title;
-    private boolean male;
-    private String email;
-    private String location;
-    private String phone;
-    private Integer newsletterSubscription;
-    private String website;
-    private String bio;
 
-    public String getEmail() {
-        return email;
-    }
+	private String role;
+	private String firstName;
+	private String lastName;
+	private String title;
+	private boolean male;
+	private String email;
+	private String location;
+	private String phone;
+	private Integer newsletterSubscription;
+	private String website;
+	private String bio;
 
-    public void setEmail(final String email) {
-        this.email = email;
-    }
+	public String getEmail() {
+		return this.email;
+	}
 
-    public String getLocation() {
-        return location;
-    }
+	public void setEmail(final String email) {
+		this.email = email;
+	}
 
-    public void setLocation(final String location) {
-        this.location = location;
-    }
+	public String getLocation() {
+		return this.location;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public void setLocation(final String location) {
+		this.location = location;
+	}
 
-    public void setPhone(final String phone) {
-        this.phone = phone;
-    }
+	public String getPhone() {
+		return this.phone;
+	}
 
-    public Integer getNewsletterSubscription() {
-        return newsletterSubscription;
-    }
+	public void setPhone(final String phone) {
+		this.phone = phone;
+	}
 
-    public void setNewsletterSubscription(final Integer newsletterSubscription) {
-        this.newsletterSubscription = newsletterSubscription;
-    }
+	public Integer getNewsletterSubscription() {
+		return this.newsletterSubscription;
+	}
 
-    public String getWebsite() {
-        return website;
-    }
+	public void setNewsletterSubscription(final Integer newsletterSubscription) {
+		this.newsletterSubscription = newsletterSubscription;
+	}
 
-    public void setWebsite(final String website) {
-        this.website = website;
-    }
+	public String getWebsite() {
+		return this.website;
+	}
 
-    public String getBio() {
-        return bio;
-    }
+	public void setWebsite(final String website) {
+		this.website = website;
+	}
 
-    public void setBio(final String bio) {
-        this.bio = bio;
-    }
+	public String getBio() {
+		return this.bio;
+	}
 
-    public boolean isMale() {
-        return male;
-    }
+	public void setBio(final String bio) {
+		this.bio = bio;
+	}
 
-    public void setMale(final boolean male) {
-        this.male = male;
-    }
+	public boolean isMale() {
+		return this.male;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public void setMale(final boolean male) {
+		this.male = male;
+	}
 
-    public void setTitle(final String title) {
-        this.title = title;
-    }
+	public String getTitle() {
+		return this.title;
+	}
 
-    public String getRole() {
-        return role;
-    }
+	public void setTitle(final String title) {
+		this.title = title;
+	}
 
-    public void setRole(final String role) {
-        this.role = role;
-    }
+	public String getRole() {
+		return this.role;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setRole(final String role) {
+		this.role = role;
+	}
 
-    public void setFirstName(final String firstName) {
-        this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return this.firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setFirstName(final String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(final String lastName) {
-        this.lastName = lastName;
-    }
+	public String getLastName() {
+		return this.lastName;
+	}
+
+	public void setLastName(final String lastName) {
+		this.lastName = lastName;
+	}
 
 }

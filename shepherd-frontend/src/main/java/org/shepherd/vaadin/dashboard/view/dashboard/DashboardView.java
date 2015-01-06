@@ -58,24 +58,24 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		setSizeFull();
 		DashboardEventBus.register(this);
 
-		root = new VerticalLayout();
-		root.setSizeFull();
-		root.setMargin(true);
-		root.addStyleName("dashboard-view");
-		setContent(root);
-		Responsive.makeResponsive(root);
+		this.root = new VerticalLayout();
+		this.root.setSizeFull();
+		this.root.setMargin(true);
+		this.root.addStyleName("dashboard-view");
+		setContent(this.root);
+		Responsive.makeResponsive(this.root);
 
-		root.addComponent(buildHeader());
+		this.root.addComponent(buildHeader());
 
-		root.addComponent(buildSparklines());
+		this.root.addComponent(buildSparklines());
 
 		Component content = buildContent();
-		root.addComponent(content);
-		root.setExpandRatio(content, 1);
+		this.root.addComponent(content);
+		this.root.setExpandRatio(content, 1);
 
 		// All the open sub-windows should be closed whenever the root layout
 		// gets clicked.
-		root.addLayoutClickListener(new LayoutClickListener() {
+		this.root.addLayoutClickListener(new LayoutClickListener() {
 
 			@Override
 			public void layoutClick(final LayoutClickEvent event) {
@@ -114,19 +114,19 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		header.addStyleName("viewheader");
 		header.setSpacing(true);
 
-		titleLabel = new Label("Dashboard");
-		titleLabel.setId(TITLE_ID);
-		titleLabel.setSizeUndefined();
-		titleLabel.addStyleName(ValoTheme.LABEL_H1);
-		titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-		header.addComponent(titleLabel);
+		this.titleLabel = new Label("Dashboard");
+		this.titleLabel.setId(TITLE_ID);
+		this.titleLabel.setSizeUndefined();
+		this.titleLabel.addStyleName(ValoTheme.LABEL_H1);
+		this.titleLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+		header.addComponent(this.titleLabel);
 
-		notificationsButton = buildNotificationsButton();
+		this.notificationsButton = buildNotificationsButton();
 
 		Component edit = buildEditButton();
 
 		//		Component userMenuComponent = buildUserMenu();
-		HorizontalLayout tools = new HorizontalLayout(notificationsButton, edit);
+		HorizontalLayout tools = new HorizontalLayout(this.notificationsButton, edit);
 		tools.setSpacing(true);
 		tools.addStyleName("toolbar");
 		header.addComponent(tools);
@@ -146,23 +146,23 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		final User user = getCurrentUser();
 
 		settings.addStyleName("user-menu");
-		settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.png"), null);
-		settingsItem.addItem("Edit Profile", new Command() {
+		this.settingsItem = settings.addItem("", new ThemeResource("img/profile-pic-300px.png"), null);
+		this.settingsItem.addItem("Edit Profile", new Command() {
 
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
 				ProfilePreferencesWindow.open(user, false);
 			}
 		});
-		settingsItem.addItem("Preferences", new Command() {
+		this.settingsItem.addItem("Preferences", new Command() {
 
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
 				ProfilePreferencesWindow.open(user, true);
 			}
 		});
-		settingsItem.addSeparator();
-		settingsItem.addItem("Sign Out", new Command() {
+		this.settingsItem.addSeparator();
+		this.settingsItem.addItem("Sign Out", new Command() {
 
 			@Override
 			public void menuSelected(final MenuItem selectedItem) {
@@ -195,23 +195,23 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				getUI().addWindow(new DashboardEdit(DashboardView.this, titleLabel.getValue()));
+				getUI().addWindow(new DashboardEdit(DashboardView.this, DashboardView.this.titleLabel.getValue()));
 			}
 		});
 		return result;
 	}
 
 	private Component buildContent() {
-		dashboardPanels = new CssLayout();
-		dashboardPanels.addStyleName("dashboard-panels");
-		Responsive.makeResponsive(dashboardPanels);
+		this.dashboardPanels = new CssLayout();
+		this.dashboardPanels.addStyleName("dashboard-panels");
+		Responsive.makeResponsive(this.dashboardPanels);
 
 		//		dashboardPanels.addComponent(buildTopGrossingMovies());
 		//		dashboardPanels.addComponent(buildNotes());
 		//		dashboardPanels.addComponent(buildTop10TitlesByRevenue());
 		//		dashboardPanels.addComponent(buildPopularMovies());
 
-		return dashboardPanels;
+		return this.dashboardPanels;
 	}
 
 	//	private Component buildNotes() {
@@ -260,7 +260,7 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		Button showAll = new Button("View All Notifications", new ClickListener() {
 
 			@Override
-			public void buttonClick(final ClickEvent event) {
+			public void buttonClick(final ClickEvent event1) {
 				Notification.show("Not implemented in this demo");
 			}
 		});
@@ -270,23 +270,23 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 		footer.setComponentAlignment(showAll, Alignment.TOP_CENTER);
 		notificationsLayout.addComponent(footer);
 
-		if (notificationsWindow == null) {
-			notificationsWindow = new Window();
-			notificationsWindow.setWidth(300.0f, Unit.PIXELS);
-			notificationsWindow.addStyleName("notifications");
-			notificationsWindow.setClosable(false);
-			notificationsWindow.setResizable(false);
-			notificationsWindow.setDraggable(false);
-			notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
-			notificationsWindow.setContent(notificationsLayout);
+		if (this.notificationsWindow == null) {
+			this.notificationsWindow = new Window();
+			this.notificationsWindow.setWidth(300.0f, Unit.PIXELS);
+			this.notificationsWindow.addStyleName("notifications");
+			this.notificationsWindow.setClosable(false);
+			this.notificationsWindow.setResizable(false);
+			this.notificationsWindow.setDraggable(false);
+			this.notificationsWindow.setCloseShortcut(KeyCode.ESCAPE, null);
+			this.notificationsWindow.setContent(notificationsLayout);
 		}
 
-		if (!notificationsWindow.isAttached()) {
-			notificationsWindow.setPositionY(event.getClientY() - event.getRelativeY() + 40);
-			getUI().addWindow(notificationsWindow);
-			notificationsWindow.focus();
+		if (!this.notificationsWindow.isAttached()) {
+			this.notificationsWindow.setPositionY(event.getClientY() - event.getRelativeY() + 40);
+			getUI().addWindow(this.notificationsWindow);
+			this.notificationsWindow.focus();
 		} else {
-			notificationsWindow.close();
+			this.notificationsWindow.close();
 		}
 	}
 
@@ -297,17 +297,17 @@ public final class DashboardView extends Panel implements View, DashboardEditLis
 
 	@Override
 	public void dashboardNameEdited(final String name) {
-		titleLabel.setValue(name);
+		this.titleLabel.setValue(name);
 	}
 
 	public static final class NotificationsButton extends Button {
 
 		private static final String STYLE_UNREAD = "unread";
-		public static final String ID = "dashboard-notifications";
+		public static final String ID1 = "dashboard-notifications";
 
 		public NotificationsButton() {
 			setIcon(FontAwesome.BELL);
-			setId(ID);
+			setId(ID1);
 			addStyleName("notifications");
 			addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 			DashboardEventBus.register(this);

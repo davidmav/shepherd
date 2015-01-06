@@ -1,24 +1,24 @@
 package org.shepherd.monitored;
 
+import com.jcabi.aspects.Loggable;
+
 import org.shepherd.monitored.consolidator.MonitoringConsolidator;
 import org.springframework.util.Assert;
-
-import com.jcabi.aspects.Loggable;
 
 /**
  * 
  * @author DavidM
  *
  */
-public class MonitoringAgentImpl implements MonitoringAgent {
-	
-	protected Monitored monitored;
-	
-	protected MonitoringTask monitoringTask;
-	
+public class MonitoringAgentImpl<T extends Monitored> implements MonitoringAgent<T> {
+
+	protected T monitored;
+
+	protected MonitoringTask<T> monitoringTask;
+
 	protected MonitoringConsolidator outputCollector;
-	
-	public MonitoringAgentImpl(Monitored monitored, MonitoringTask monitoringTask, MonitoringConsolidator outputCollector) {
+
+	public MonitoringAgentImpl(T monitored, MonitoringTask<T> monitoringTask, MonitoringConsolidator outputCollector) {
 		Assert.notNull(monitored);
 		Assert.notNull(monitoringTask);
 		Assert.notNull(outputCollector);
@@ -29,15 +29,15 @@ public class MonitoringAgentImpl implements MonitoringAgent {
 
 	@Loggable(Loggable.INFO)
 	public void run() {
-		MonitoringOutput output = getMonitoringTask().runMonitor();
+		MonitoringOutput<T> output = getMonitoringTask().runMonitor();
 		this.outputCollector.insertOutput(output);
 	}
 
-	public Monitored getMonitored() {
+	public T getMonitored() {
 		return this.monitored;
 	}
 
-	public MonitoringTask getMonitoringTask() {
+	public MonitoringTask<T> getMonitoringTask() {
 		return this.monitoringTask;
 	}
 

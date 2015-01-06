@@ -7,20 +7,20 @@ import com.jcabi.aspects.Loggable;
  * @author DavidM
  *
  */
-public interface MonitoringAgent extends Runnable {
-	
+public interface MonitoringAgent<T extends Monitored> extends Runnable {
+
 	/**
 	 * 
 	 * @return
 	 */
 	@Loggable(Loggable.DEBUG)
-	public Monitored getMonitored();
-	
+	public T getMonitored();
+
 	/**
 	 * 
 	 * @return
 	 */
 	@Loggable(Loggable.DEBUG)
-	public MonitoringTask getMonitoringTask();
-	
+	public MonitoringTask<T> getMonitoringTask();
+
 }

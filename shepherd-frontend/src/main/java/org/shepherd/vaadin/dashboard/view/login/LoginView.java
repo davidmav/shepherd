@@ -30,7 +30,7 @@ import org.vaadin.spring.navigator.VaadinView;
 public class LoginView extends VerticalLayout implements View {
 
 	public static final String STYLE_NAME = "loginview";
-	private  TextField username;
+	private TextField username;
 
 	private PasswordField password;
 
@@ -62,27 +62,27 @@ public class LoginView extends VerticalLayout implements View {
 		fields.setSpacing(true);
 		fields.addStyleName("fields");
 
-		username = new TextField("Username");
-		username.setIcon(FontAwesome.USER);
-		username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+		this.username = new TextField("Username");
+		this.username.setIcon(FontAwesome.USER);
+		this.username.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-		password = new PasswordField("Password");
-		password.setIcon(FontAwesome.LOCK);
-		password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
+		this.password = new PasswordField("Password");
+		this.password.setIcon(FontAwesome.LOCK);
+		this.password.addStyleName(ValoTheme.TEXTFIELD_INLINE_ICON);
 
-		loginButton = new Button("Sign In");
-		loginButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		loginButton.setClickShortcut(KeyCode.ENTER);
-		loginButton.focus();
+		this.loginButton = new Button("Sign In");
+		this.loginButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		this.loginButton.setClickShortcut(KeyCode.ENTER);
+		this.loginButton.focus();
 
-		fields.addComponents(username, password, loginButton);
-		fields.setComponentAlignment(loginButton, Alignment.BOTTOM_LEFT);
+		fields.addComponents(this.username, this.password, this.loginButton);
+		fields.setComponentAlignment(this.loginButton, Alignment.BOTTOM_LEFT);
 
-		loginButton.addClickListener(new ClickListener() {
+		this.loginButton.addClickListener(new ClickListener() {
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				DashboardEventBus.post(new UserLoginRequestedEvent(username.getValue(), password.getValue()));
+				DashboardEventBus.post(new UserLoginRequestedEvent(LoginView.this.username.getValue(), LoginView.this.password.getValue()));
 			}
 		});
 		return fields;

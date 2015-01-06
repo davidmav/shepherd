@@ -23,10 +23,9 @@ public class DefaultMonitoredProviderTest extends AbstractMonitoringTest {
 
 	@Test
 	public void testDefaultMonitoredProvider() {
-		Collection<Class<Monitored>> allMonitoredClasses = monitoredProvider.getAllMonitoredClasses();
-		Assert.assertEquals(1, allMonitoredClasses.size());
-		Assert.assertEquals(JmxProcessImpl.class, allMonitoredClasses.iterator().next());
-		Collection<Class<MonitoringTask>> allMonitoringTaskClasses = monitoredProvider.getAllMonitoringTaskClasses(JmxProcessImpl.class);
+		Collection<Class<Monitored>> allMonitoredClasses = this.monitoredProvider.getAllMonitoredClasses();
+		Assert.assertEquals(2, allMonitoredClasses.size());
+		Collection<Class<MonitoringTask<JmxProcessImpl>>> allMonitoringTaskClasses = this.monitoredProvider.getAllMonitoringTaskClasses(JmxProcessImpl.class);
 		Assert.assertEquals(1, allMonitoringTaskClasses.size());
 		Assert.assertEquals(ExpressionJmxTask.class, allMonitoringTaskClasses.iterator().next());
 	}

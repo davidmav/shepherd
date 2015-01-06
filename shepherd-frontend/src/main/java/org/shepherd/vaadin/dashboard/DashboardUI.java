@@ -105,7 +105,7 @@ public final class DashboardUI extends UI {
 			addStyleName(MainView.STYLE_NAME);
 
 			Navigator navigator = getNavigator();
-			navigator.addProvider(springViewProvider);
+			navigator.addProvider(this.springViewProvider);
 			navigator.navigateTo(DashboardView.ID);
 		} else {
 			setContent(new LoginView());

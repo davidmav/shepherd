@@ -2,6 +2,8 @@ package org.shepherd.monitored;
 
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.shepherd.monitored.port.Port;
+import org.shepherd.monitored.port.Port.PortType;
 import org.shepherd.monitored.process.jmx.JmxProcess;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ import javax.management.remote.JMXConnector;
 
 public class MockUtils {
 
+	@SuppressWarnings("resource")
 	public static JmxProcess createJmxProcessMock() {
 		JmxProcess mock = EasyMock.createMock(JmxProcess.class);
 		JMXConnector jmxConnectorMock = EasyMock.createMock(JMXConnector.class);
@@ -42,8 +45,8 @@ public class MockUtils {
 
 				@Override
 				public Object answer() throws Throwable {
-					if (!goodAnswered) {
-						goodAnswered = true;
+					if (!this.goodAnswered) {
+						this.goodAnswered = true;
 						return "Good";
 
 					} else {
@@ -58,6 +61,18 @@ public class MockUtils {
 			e.printStackTrace();
 		}
 		EasyMock.replay(mBeanServerConnectionMock, jmxConnectorMock, mock);
+		return mock;
+	}
+
+	public static Port createPortMock() {
+
+		Port mock = EasyMock.createMock(Port.class);
+		EasyMock.expect(mock.getHostname()).andReturn("localhost").anyTimes();
+		EasyMock.expect(mock.getPort()).andReturn(8080).anyTimes();
+		EasyMock.expect(mock.getPortType()).andReturn(PortType.TCP).anyTimes();
+
+		EasyMock.replay(mock);
+
 		return mock;
 	}
 
