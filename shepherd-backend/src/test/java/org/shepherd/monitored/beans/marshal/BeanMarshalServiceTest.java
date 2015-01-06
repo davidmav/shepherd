@@ -7,8 +7,6 @@ import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.annotation.UICreationPoint;
 import org.shepherd.monitored.beans.definition.BeanDefinitionService;
 import org.shepherd.monitored.beans.definition.BeanDefinitionServiceImpl;
-import org.shepherd.monitored.beans.marshal.MarshalService;
-import org.shepherd.monitored.beans.marshal.MarshalServiceImpl;
 import org.shepherd.monitored.process.jmx.JmxProcessImpl;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.util.Assert;
@@ -37,6 +35,8 @@ public class BeanMarshalServiceTest extends AbstractMonitoringTest {
 	 */
 	@Test
 	public void testJmxProcessMarshal() throws ParserConfigurationException, TransformerException, IOException {
+		@SuppressWarnings("unchecked")
+		//This case is safe
 		Constructor<? extends Monitored>[] constructors = (Constructor<? extends Monitored>[])JmxProcessImpl.class.getConstructors();
 		Constructor<? extends Monitored> uiConstructor = null;
 		for (Constructor<? extends Monitored> constructor : constructors) {
@@ -53,12 +53,13 @@ public class BeanMarshalServiceTest extends AbstractMonitoringTest {
 		Assert.notNull(marshalBeanDefinition);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		marshalService.writeElement(marshalBeanDefinition, outputStream);
-		InputStream inputStream = marshalService.getClass().getResourceAsStream("/org/shepherd/monitored/beans/jmxProcess.xml");
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(inputStream, writer, "UTF-8");
-		String fromFile = writer.toString();
-		String marshaled = outputStream.toString();
-		Assert.isTrue(fromFile.equals(marshaled));
+		try (InputStream inputStream = marshalService.getClass().getResourceAsStream("/org/shepherd/monitored/beans/jmxProcess.xml");) {
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(inputStream, writer, "UTF-8");
+			String fromFile = writer.toString();
+			String marshaled = outputStream.toString();
+			Assert.isTrue(fromFile.equals(marshaled));
+		}
 	}
 
 }

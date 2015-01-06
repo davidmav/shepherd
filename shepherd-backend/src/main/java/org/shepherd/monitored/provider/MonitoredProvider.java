@@ -29,6 +29,6 @@ public interface MonitoredProvider {
 	 * @param monitoredClass
 	 * @return
 	 */
-	public Collection<Class<MonitoringTask>> getAllMonitoringTaskClasses(Class<? extends Monitored> monitoredClass);
+	public <T extends Monitored> Collection<Class<MonitoringTask<T>>> getAllMonitoringTaskClasses(Class<T> monitoredClass);
 
 }

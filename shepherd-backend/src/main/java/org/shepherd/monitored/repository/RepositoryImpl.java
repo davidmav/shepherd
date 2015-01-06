@@ -6,7 +6,6 @@ import org.shepherd.monitored.repository.exception.DuplicateMonitoringTaskExcept
 import org.shepherd.monitored.repository.exception.MonitoredAlreadyExistsException;
 import org.shepherd.monitored.repository.exception.MonitoredNotFoundException;
 import org.shepherd.monitored.repository.exception.MonitoringTaskNotFoundException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -16,11 +15,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class RepositoryImpl implements Repository, InitializingBean {
+public class RepositoryImpl implements Repository {
 
 	protected Map<String, Monitored> monitoredMap = new HashMap<String, Monitored>();
 
-	protected Collection<MonitoringTask> monitoringTasks = new ArrayList<MonitoringTask>();
+	protected Collection<MonitoringTask<?>> monitoringTasks = new ArrayList<MonitoringTask<?>>();
 
 	public void setMonitored(Collection<Monitored> m) {
 		for (Monitored monitored : m) {
@@ -34,8 +33,8 @@ public class RepositoryImpl implements Repository, InitializingBean {
 	}
 
 	@Override
-	public void setMonitoringTasks(Collection<MonitoringTask> m) {
-		for (MonitoringTask monitoringTask : m) {
+	public void setMonitoringTasks(Collection<MonitoringTask<?>> m) {
+		for (MonitoringTask<?> monitoringTask : m) {
 			Monitored monitored = monitoringTask.getMonitored();
 			if (!this.monitoredMap.values().contains(monitored)) {
 				this.monitoredMap.put(monitored.getName(), monitored);
@@ -64,12 +63,12 @@ public class RepositoryImpl implements Repository, InitializingBean {
 	}
 
 	@Override
-	public Collection<MonitoringTask> getMonitoringTasks() {
+	public Collection<MonitoringTask<?>> getMonitoringTasks() {
 		return Collections.unmodifiableCollection(this.monitoringTasks);
 	}
 
 	@Override
-	public void addMonitoringTask(MonitoringTask monitoringTask) {
+	public void addMonitoringTask(MonitoringTask<?> monitoringTask) {
 		if (this.monitoringTasks.contains(monitoringTask)) {
 			throw new DuplicateMonitoringTaskException();
 		}
@@ -77,18 +76,12 @@ public class RepositoryImpl implements Repository, InitializingBean {
 	}
 
 	@Override
-	public void removeMonitoringTask(MonitoringTask monitoringTask) {
+	public void removeMonitoringTask(MonitoringTask<?> monitoringTask) {
 		if (!this.monitoringTasks.contains(monitoringTask)) {
 			throw new MonitoringTaskNotFoundException();
 		} else {
 			this.monitoringTasks.remove(monitoringTask);
 		}
-
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
 
 	}
 

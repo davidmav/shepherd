@@ -31,7 +31,7 @@ public class MonitoredTable extends Table implements ApplicationContextAware {
 
 	public void refreshTable() {
 		removeAllItems();
-		Map<String, Monitored> monitoredCollection = BeanFactoryUtils.beansOfTypeIncludingAncestors(applicationContext, Monitored.class, true, false);
+		Map<String, Monitored> monitoredCollection = BeanFactoryUtils.beansOfTypeIncludingAncestors(this.applicationContext, Monitored.class, true, false);
 		for (String monitoredId : monitoredCollection.keySet()) {
 			Monitored monitored = monitoredCollection.get(monitoredId);
 			//TODO create an utils service or registry for getting monitored properties, like display name

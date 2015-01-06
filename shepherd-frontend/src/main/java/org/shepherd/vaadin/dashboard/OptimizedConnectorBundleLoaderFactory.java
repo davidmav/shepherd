@@ -21,21 +21,21 @@ public final class OptimizedConnectorBundleLoaderFactory extends ConnectorBundle
 
 	private final Set<String> eagerConnectors = new HashSet<String>();
 	{
-		eagerConnectors.add(PasswordFieldConnector.class.getName());
-		eagerConnectors.add(VerticalLayoutConnector.class.getName());
-		eagerConnectors.add(HorizontalLayoutConnector.class.getName());
-		eagerConnectors.add(ButtonConnector.class.getName());
-		eagerConnectors.add(UIConnector.class.getName());
-		eagerConnectors.add(CssLayoutConnector.class.getName());
-		eagerConnectors.add(TextFieldConnector.class.getName());
-		eagerConnectors.add(PanelConnector.class.getName());
-		eagerConnectors.add(LabelConnector.class.getName());
-		eagerConnectors.add(WindowConnector.class.getName());
+		this.eagerConnectors.add(PasswordFieldConnector.class.getName());
+		this.eagerConnectors.add(VerticalLayoutConnector.class.getName());
+		this.eagerConnectors.add(HorizontalLayoutConnector.class.getName());
+		this.eagerConnectors.add(ButtonConnector.class.getName());
+		this.eagerConnectors.add(UIConnector.class.getName());
+		this.eagerConnectors.add(CssLayoutConnector.class.getName());
+		this.eagerConnectors.add(TextFieldConnector.class.getName());
+		this.eagerConnectors.add(PanelConnector.class.getName());
+		this.eagerConnectors.add(LabelConnector.class.getName());
+		this.eagerConnectors.add(WindowConnector.class.getName());
 	}
 
 	@Override
 	protected LoadStyle getLoadStyle(final JClassType connectorType) {
-		if (eagerConnectors.contains(connectorType.getQualifiedBinaryName())) {
+		if (this.eagerConnectors.contains(connectorType.getQualifiedBinaryName())) {
 			return LoadStyle.EAGER;
 		} else {
 			// Loads all other connectors immediately after the initial view has

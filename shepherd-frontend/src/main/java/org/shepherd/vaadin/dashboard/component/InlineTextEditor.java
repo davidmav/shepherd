@@ -33,18 +33,18 @@ public class InlineTextEditor extends CustomComponent {
 		setWidth(100.0f, Unit.PERCENTAGE);
 		addStyleName("inline-text-editor");
 
-		editor = buildEditor();
-		readOnly = buildReadOnly();
+		this.editor = buildEditor();
+		this.readOnly = buildReadOnly();
 
 		if (initialValue != null) {
-			property.setValue(initialValue);
+			this.property.setValue(initialValue);
 		}
 
-		setCompositionRoot(editor);
+		setCompositionRoot(this.editor);
 	}
 
 	private Component buildReadOnly() {
-		final Label text = new Label(property);
+		final Label text = new Label(this.property);
 		text.setContentMode(ContentMode.HTML);
 
 		Button editButton = new Button(FontAwesome.EDIT);
@@ -54,7 +54,7 @@ public class InlineTextEditor extends CustomComponent {
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				setCompositionRoot(editor);
+				setCompositionRoot(InlineTextEditor.this.editor);
 			}
 		});
 
@@ -66,7 +66,7 @@ public class InlineTextEditor extends CustomComponent {
 			@Override
 			public void layoutClick(final LayoutClickEvent event) {
 				if (event.getChildComponent() == text && event.isDoubleClick()) {
-					setCompositionRoot(editor);
+					setCompositionRoot(InlineTextEditor.this.editor);
 				}
 			}
 		});
@@ -74,7 +74,7 @@ public class InlineTextEditor extends CustomComponent {
 	}
 
 	private Component buildEditor() {
-		final RichTextArea rta = new RichTextArea(property);
+		final RichTextArea rta = new RichTextArea(this.property);
 		rta.setWidth(100.0f, Unit.PERCENTAGE);
 		rta.addAttachListener(new AttachListener() {
 
@@ -93,7 +93,7 @@ public class InlineTextEditor extends CustomComponent {
 
 			@Override
 			public void buttonClick(final ClickEvent event) {
-				setCompositionRoot(readOnly);
+				setCompositionRoot(InlineTextEditor.this.readOnly);
 			}
 		});
 

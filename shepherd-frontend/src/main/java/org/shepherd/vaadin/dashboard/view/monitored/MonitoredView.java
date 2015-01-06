@@ -71,8 +71,8 @@ public class MonitoredView extends VerticalLayout implements View {
 
 	@PostConstruct
 	private void init() {
-		monitoredTable.refreshTable();
-		addComponents(buildHeader(), monitoredTable);
+		this.monitoredTable.refreshTable();
+		addComponents(buildHeader(), this.monitoredTable);
 	}
 
 	private Component buildHeader() {
@@ -116,29 +116,31 @@ public class MonitoredView extends VerticalLayout implements View {
 			ComboBox monitoredType = new ComboBox();
 			monitoredType.setCaption("Monitoring Type");
 			Map<MonitoredUIItem, Layout> monitoredItems = new HashMap<MonitoredUIItem, Layout>();
-			for (Class<Monitored> monitoredClass : monitoredProvider.getAllMonitoredClasses()) {
+			for (Class<Monitored> monitoredClass : MonitoredView.this.monitoredProvider.getAllMonitoredClasses()) {
 				MonitoredUIItem item = new MonitoredUIItem(monitoredClass);
 				monitoredItems.put(item, item.getLayout());
 				monitoredType.addItem(item);
 			}
 			HorizontalLayout horizontalLayout = new HorizontalLayout();
 			Layout testSaveButtonsLayout = createTestSaveButtonsLayout();
-			newTestSaveButtonsLayout = testSaveButtonsLayout;
+			this.newTestSaveButtonsLayout = testSaveButtonsLayout;
 			Layout comboBoxLayout = createComboBoxLayout(monitoredType, monitoredItems);
-			registerButtonListeners(newTestSaveButtonsLayout, monitoredType, newMonitoredWindow);
+			registerButtonListeners(this.newTestSaveButtonsLayout, monitoredType, newMonitoredWindow);
 			horizontalLayout.addComponents(comboBoxLayout, testSaveButtonsLayout);
 			newMonitoredWindow.setStyleName("monitored");
 			newMonitoredWindow.setContent(horizontalLayout);
 			newMonitoredWindow.setModal(true);
 			newMonitoredWindow.setResizable(false);
+			newMonitoredWindow.setPositionY(event.getClientY() - event.getRelativeY() + 50);
+			newMonitoredWindow.setPositionX(event.getClientX() - event.getClientX() + 400);
 			//			newMonitoredWindow.setDraggable(false);
 			//			newMonitoredWindow.setHeight(500, Unit.PIXELS);
 			//			newMonitoredWindow.setWidth(600, Unit.PIXELS);
 			UI.getCurrent().addWindow(newMonitoredWindow);
 		}
 
-		private void registerButtonListeners(Layout newTestSaveButtonsLayout, ComboBox monitoredType, Window newMonitoredWindow) {
-			for (Component component : newTestSaveButtonsLayout) {
+		private void registerButtonListeners(Layout newTestSaveButtonsLayout1, ComboBox monitoredType, Window newMonitoredWindow) {
+			for (Component component : newTestSaveButtonsLayout1) {
 				if (isTestButton(component)) {
 					((Button)component).addClickListener(new ClickListener() {
 
@@ -177,12 +179,12 @@ public class MonitoredView extends VerticalLayout implements View {
 									Constructor<? extends Monitored> constructor = value.getConstructor();
 									Object[] arguments = value.getArguments();
 									TextField id = (TextField)value.getLayout().iterator().next();
-									BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition(id.getValue(), constructor, arguments);
+									BeanDefinition beanDefinition = MonitoredView.this.beanDefinitionService.createMonitoredBeanDefinition(id.getValue(), constructor, arguments);
 									overwriteWindow = createOverwriteWindow(newMonitoredWindow, beanDefinition);
-									beanRegistrarService.saveBeanDefinition(beanDefinition, false);
+									MonitoredView.this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);
 									newMonitoredWindow.close();
 									notification = new Notification("Monitored Application Saved Successfully");
-									monitoredTable.refreshTable();
+									MonitoredView.this.monitoredTable.refreshTable();
 								} catch (BeanAlreadyExistsException e) {
 									UI.getCurrent().addWindow(overwriteWindow);
 								} catch (BeanOfOtherClassAlreadyExistsException e) {
@@ -200,7 +202,7 @@ public class MonitoredView extends VerticalLayout implements View {
 
 						}
 
-						private Window createOverwriteWindow(Window newMonitoredWindow, final BeanDefinition beanDefinition) {
+						private Window createOverwriteWindow(Window newMonitoredWindow1, final BeanDefinition beanDefinition) {
 							Window overwriteWindow = new Window(" Monitored with the same Id already exists ");
 							overwriteWindow.setIcon(FontAwesome.INFO);
 							overwriteWindow.setModal(true);
@@ -221,12 +223,12 @@ public class MonitoredView extends VerticalLayout implements View {
 
 								@Override
 								public void buttonClick(ClickEvent event) {
-									beanRegistrarService.saveBeanDefinition(beanDefinition, true);
+									MonitoredView.this.beanRegistrarService.saveBeanDefinition(beanDefinition, true);
 									overwriteWindow.close();
-									newMonitoredWindow.close();
+									newMonitoredWindow1.close();
 									Notification notification = new Notification("Monitored Application Saved Successfully");
 									notification.show(UI.getCurrent().getPage());
-									monitoredTable.refreshTable();
+									MonitoredView.this.monitoredTable.refreshTable();
 
 								}
 							});
@@ -268,7 +270,7 @@ public class MonitoredView extends VerticalLayout implements View {
 
 		private Layout createComboBoxLayout(ComboBox monitoredType, Map<MonitoredUIItem, Layout> monitoredItems) {
 			VerticalLayout verticalLayout = new VerticalLayout(monitoredType);
-			monitoredType.addListener(new MonitoredItemSetChangeListener(monitoredItems, verticalLayout, newTestSaveButtonsLayout));
+			monitoredType.addListener(new MonitoredItemSetChangeListener(monitoredItems, verticalLayout, this.newTestSaveButtonsLayout));
 			verticalLayout.setSpacing(true);
 			MarginInfo marginInfo = new MarginInfo(true);
 			verticalLayout.setMargin(marginInfo);
@@ -300,15 +302,15 @@ public class MonitoredView extends VerticalLayout implements View {
 				ComboBox source = (ComboBox)event.getSource();
 				Object value = source.getValue();
 				Layout currentSelectionLayout = this.monitoredItems.get(value);
-				if (currentSelection != null && value != currentSelection) {
-					layout.removeComponent(monitoredItems.get(currentSelection));
+				if (this.currentSelection != null && value != this.currentSelection) {
+					this.layout.removeComponent(this.monitoredItems.get(this.currentSelection));
 				}
-				currentSelection = (MonitoredUIItem)value;
+				this.currentSelection = (MonitoredUIItem)value;
 				if (currentSelectionLayout != null) {
-					layout.addComponent(currentSelectionLayout);
-					newTestSaveButtonsLayout.setEnabled(true);
+					this.layout.addComponent(currentSelectionLayout);
+					this.newTestSaveButtonsLayout.setEnabled(true);
 				} else {
-					newTestSaveButtonsLayout.setEnabled(false);
+					this.newTestSaveButtonsLayout.setEnabled(false);
 				}
 			}
 

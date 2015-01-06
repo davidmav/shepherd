@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.shepherd.monitored.AbstractMonitoringTest;
 import org.shepherd.monitored.MonitoringOutput;
 import org.shepherd.monitored.MonitoringOutput.Severity;
+import org.shepherd.monitored.process.jmx.JmxProcess;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ public class ExpressionJmxTaskTest extends AbstractMonitoringTest {
 	@Test
 	public void testRootObject() {
 		ExpressionJmxTask task = new ExpressionJmxTask(this.jmxProcess, Collections.<String, Severity> singletonMap("test", Severity.INFO));
+		@SuppressWarnings("unchecked")
+		//Safe Casting
 		Map<String, JmxTreeObject> rootObject = (Map<String, JmxTreeObject>)task.getRootObject();
 		Object attribute = rootObject.get("org.apache.activemq").getObject("Broker").getObject("localhost").getObject("Health").getAttribute("CurrentStatus");
 		Assert.assertEquals(attribute, "Good");
@@ -32,7 +35,7 @@ public class ExpressionJmxTaskTest extends AbstractMonitoringTest {
 		expressionMap.put("get('org.apache.activemq').getObject('Broker').getObject('localhost').getAttribute('StorePercentUsage') < 10", Severity.WARN);
 		expressionMap.put("get('org.apache.activemq').getObject('Broker').getObject('localhost').getObject('Health').getAttribute('CurrentStatus') == 'Good'", Severity.ERROR);
 		ExpressionJmxTask task = new ExpressionJmxTask(this.jmxProcess, expressionMap);
-		MonitoringOutput output = task.runMonitor();
+		MonitoringOutput<JmxProcess> output = task.runMonitor();
 		Assert.assertEquals(output.getSeverity(), Severity.WARN);
 		Assert.assertEquals(output.getMessage(), "Expression: get('org.apache.activemq').getObject('Broker').getObject('localhost').getAttribute('StorePercentUsage') < 10 is false");
 

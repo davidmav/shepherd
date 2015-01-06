@@ -47,13 +47,14 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 
 	@PostConstruct
 	protected void loadFileSystemApplicationContext() {
+		@SuppressWarnings("resource")
 		ApplicationContext ctx = new FileSystemXmlApplicationContext(new String[] { WORK_MONITORED_BEANS_LOCATION + ASTERIX, WORK_MONITORINGTASKS_BEANS_LOCATION + ASTERIX });
-		applicationContext.setParent(ctx);
+		this.applicationContext.setParent(ctx);
 	}
 
 	@Override
 	public boolean beanExists(BeanDefinition beanDefintion) {
-		return applicationContext.containsBean(beanDefintion.getAttribute(ID).toString());
+		return this.applicationContext.containsBean(beanDefintion.getAttribute(ID).toString());
 	}
 
 	@Override
@@ -79,7 +80,7 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 		}
 		LOGGER.debug("Passed the tests, saving the bean now");
 
-		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)applicationContext.getBeanFactory();
+		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)this.applicationContext.getBeanFactory();
 		BeanDefinition previousBeanDefinition = null;
 		if (beanExists && overwrite) {
 			LOGGER.debug("Looking for previous bean definition");
@@ -96,7 +97,7 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 		try {
 			LOGGER.debug("Registering new bean definition");
 			beanFactory.registerBeanDefinition(id, beanDefinition);
-			applicationContext.getBean(id);
+			this.applicationContext.getBean(id);
 		} catch (Exception e) {
 			LOGGER.debug("Error occured, rolling back");
 			beanFactory.removeBeanDefinition(id);
@@ -106,34 +107,33 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 			throw e;
 		}
 		LOGGER.debug("Bean successfully created, saving monitored context to the filesystem");
-		FileOutputStream os = null;
-		try {
-			Class<?> beanClass = Class.forName(beanDefinition.getBeanClassName());
-			String beanFile = id + XML_EXTENSION;
-			File directory = null;
-			if (Monitored.class.isAssignableFrom(beanClass)) {
-				directory = new File(WORK_MONITORED_BEANS_LOCATION);
 
-			} else {
-				directory = new File(WORK_MONITORINGTASKS_BEANS_LOCATION);
-			}
-			directory.mkdirs();
-			File beanXml = new File(directory, beanFile);
-			if (beanXml.exists()) {
-				beanXml.delete();
-			}
-			os = new FileOutputStream(beanXml);
-			Element marshaledBeanDefinition = marshalService.marshalBeanDefinition(beanDefinition);
-			marshalService.writeElement(marshaledBeanDefinition, os);
-		} catch (UnsupportedEncodingException | TransformerException | FileNotFoundException | ParserConfigurationException | ClassNotFoundException e) {
+		Class<?> beanClass = null;
+		try {
+			beanClass = Class.forName(beanDefinition.getBeanClassName());
+		} catch (ClassNotFoundException e2) {
+			throw new UnableToSaveBeanException(e2);
+		}
+		String beanFile = id + XML_EXTENSION;
+		File directory = null;
+		if (Monitored.class.isAssignableFrom(beanClass)) {
+			directory = new File(WORK_MONITORED_BEANS_LOCATION);
+
+		} else {
+			directory = new File(WORK_MONITORINGTASKS_BEANS_LOCATION);
+		}
+		directory.mkdirs();
+		File beanXml = new File(directory, beanFile);
+		if (beanXml.exists()) {
+			beanXml.delete();
+		}
+		try (FileOutputStream os = new FileOutputStream(beanXml);) {
+			Element marshaledBeanDefinition = this.marshalService.marshalBeanDefinition(beanDefinition);
+			this.marshalService.writeElement(marshaledBeanDefinition, os);
+		} catch (UnsupportedEncodingException | TransformerException | FileNotFoundException | ParserConfigurationException e) {
 			throw new UnableToSaveBeanException(e);
-		} finally {
-			try {
-				if (os != null) {
-					os.close();
-				}
-			} catch (IOException e) {
-			}
+		} catch (IOException e1) {
+			LOGGER.error("Could not close resource", e1);
 		}
 	}
 

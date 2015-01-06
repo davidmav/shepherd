@@ -18,71 +18,73 @@ import com.vaadin.ui.themes.ValoTheme;
 @SuppressWarnings("serial")
 public class DashboardEdit extends Window {
 
-    private final TextField nameField = new TextField("Name");
-    private final DashboardEditListener listener;
+	private final TextField nameField = new TextField("Name");
+	private final DashboardEditListener listener;
 
-    public DashboardEdit(final DashboardEditListener listener,
-            final String currentName) {
-        this.listener = listener;
-        setCaption("Edit Dashboard");
-        setModal(true);
-        setClosable(false);
-        setResizable(false);
-        setWidth(300.0f, Unit.PIXELS);
+	public DashboardEdit(final DashboardEditListener listener, final String currentName) {
+		this.listener = listener;
+		setCaption("Edit Dashboard");
+		setModal(true);
+		setClosable(false);
+		setResizable(false);
+		setWidth(300.0f, Unit.PIXELS);
 
-        addStyleName("edit-dashboard");
+		addStyleName("edit-dashboard");
 
-        setContent(buildContent(currentName));
-    }
+		setContent(buildContent(currentName));
+	}
 
-    private Component buildContent(final String currentName) {
-        VerticalLayout result = new VerticalLayout();
-        result.setMargin(true);
-        result.setSpacing(true);
+	private Component buildContent(final String currentName) {
+		VerticalLayout result = new VerticalLayout();
+		result.setMargin(true);
+		result.setSpacing(true);
 
-        nameField.setValue(currentName);
-        nameField.addStyleName("caption-on-left");
-        nameField.focus();
+		this.nameField.setValue(currentName);
+		this.nameField.addStyleName("caption-on-left");
+		this.nameField.focus();
 
-        result.addComponent(nameField);
-        result.addComponent(buildFooter());
+		result.addComponent(this.nameField);
+		result.addComponent(buildFooter());
 
-        return result;
-    }
+		return result;
+	}
 
-    private Component buildFooter() {
-        HorizontalLayout footer = new HorizontalLayout();
-        footer.setSpacing(true);
-        footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
-        footer.setWidth(100.0f, Unit.PERCENTAGE);
+	private Component buildFooter() {
+		HorizontalLayout footer = new HorizontalLayout();
+		footer.setSpacing(true);
+		footer.addStyleName(ValoTheme.WINDOW_BOTTOM_TOOLBAR);
+		footer.setWidth(100.0f, Unit.PERCENTAGE);
 
-        Button cancel = new Button("Cancel");
-        cancel.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                close();
-            }
-        });
-        cancel.setClickShortcut(KeyCode.ESCAPE, null);
+		Button cancel = new Button("Cancel");
+		cancel.addClickListener(new ClickListener() {
 
-        Button save = new Button("Save");
-        save.addStyleName(ValoTheme.BUTTON_PRIMARY);
-        save.addClickListener(new ClickListener() {
-            @Override
-            public void buttonClick(final ClickEvent event) {
-                listener.dashboardNameEdited(nameField.getValue());
-                close();
-            }
-        });
-        save.setClickShortcut(KeyCode.ENTER, null);
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				close();
+			}
+		});
+		cancel.setClickShortcut(KeyCode.ESCAPE, null);
 
-        footer.addComponents(cancel, save);
-        footer.setExpandRatio(cancel, 1);
-        footer.setComponentAlignment(cancel, Alignment.TOP_RIGHT);
-        return footer;
-    }
+		Button save = new Button("Save");
+		save.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		save.addClickListener(new ClickListener() {
 
-    public interface DashboardEditListener {
-        void dashboardNameEdited(String name);
-    }
+			@Override
+			public void buttonClick(final ClickEvent event) {
+				DashboardEdit.this.listener.dashboardNameEdited(DashboardEdit.this.nameField.getValue());
+				close();
+			}
+		});
+		save.setClickShortcut(KeyCode.ENTER, null);
+
+		footer.addComponents(cancel, save);
+		footer.setExpandRatio(cancel, 1);
+		footer.setComponentAlignment(cancel, Alignment.TOP_RIGHT);
+		return footer;
+	}
+
+	public interface DashboardEditListener {
+
+		void dashboardNameEdited(String name);
+	}
 }

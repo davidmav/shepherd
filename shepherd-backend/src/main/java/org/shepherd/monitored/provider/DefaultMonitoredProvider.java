@@ -35,26 +35,28 @@ public class DefaultMonitoredProvider implements MonitoredProvider {
 	@Value("${monitored.provider.scanned.package:org.shepherd}")
 	private String scannedPackage;
 
-	private Map<Class<Monitored>, Collection<Class<MonitoringTask>>> providerMap;
+	private Map<Class<Monitored>, Collection<Class<MonitoringTask<? extends Monitored>>>> providerMap;
 
 	@PostConstruct
 	protected void init() throws ClassNotFoundException {
-		this.providerMap = new HashMap<Class<Monitored>, Collection<Class<MonitoringTask>>>();
+		this.providerMap = new HashMap<Class<Monitored>, Collection<Class<MonitoringTask<? extends Monitored>>>>();
 		autoscanMonitored();
 		autoscanMonitoringTasks();
 	}
 
 	protected void autoscanMonitored() throws ClassNotFoundException {
-		LOGGER.debug("Auto Scanning {} for Monitored classes", scannedPackage);
+		LOGGER.debug("Auto Scanning {} for Monitored classes", this.scannedPackage);
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
 		scanner.addIncludeFilter(new AssignableTypeFilter(Monitored.class));
-		for (BeanDefinition bd : scanner.findCandidateComponents(scannedPackage)) {
+		for (BeanDefinition bd : scanner.findCandidateComponents(this.scannedPackage)) {
 			String className = bd.getBeanClassName();
 			LOGGER.debug("Found Monitored class {}", className);
+			@SuppressWarnings("unchecked")
+			//This cast is safe
 			Class<Monitored> clas = (Class<Monitored>)Class.forName(className);
 			if (!Modifier.isAbstract(clas.getModifiers()) && !Modifier.isInterface(clas.getModifiers())) {
 				if (!this.providerMap.containsKey(clas)) {
-					this.providerMap.put(clas, new ArrayList<Class<MonitoringTask>>());
+					this.providerMap.put(clas, new ArrayList<Class<MonitoringTask<? extends Monitored>>>());
 				}
 			} else {
 				LOGGER.warn("Igonring class {}, it's abstract or interface", className);
@@ -63,13 +65,15 @@ public class DefaultMonitoredProvider implements MonitoredProvider {
 	}
 
 	protected void autoscanMonitoringTasks() throws ClassNotFoundException {
-		LOGGER.debug("Auto Scanning {} for MonitoringTask classes", scannedPackage);
+		LOGGER.debug("Auto Scanning {} for MonitoringTask classes", this.scannedPackage);
 		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
 		scanner.addIncludeFilter(new AssignableTypeFilter(MonitoringTask.class));
-		for (BeanDefinition bd : scanner.findCandidateComponents(scannedPackage)) {
+		for (BeanDefinition bd : scanner.findCandidateComponents(this.scannedPackage)) {
 			String className = bd.getBeanClassName();
 			LOGGER.debug("Found MonitoringTask class {}", className);
-			Class<MonitoringTask> clas = (Class<MonitoringTask>)Class.forName(className);
+			@SuppressWarnings("unchecked")
+			//This cast is safe
+			Class<MonitoringTask<? extends Monitored>> clas = (Class<MonitoringTask<? extends Monitored>>)Class.forName(className);
 			if (!Modifier.isAbstract(clas.getModifiers()) && !Modifier.isInterface(clas.getModifiers())) {
 				Method getMonitoredMethod = null;
 				try {
@@ -78,7 +82,9 @@ public class DefaultMonitoredProvider implements MonitoredProvider {
 					LOGGER.warn("Couldn't locate getMonitored method, skipping class {}", clas.getName());
 				}
 				if (getMonitoredMethod != null) {
-					Class<?> monitoredType = getMonitoredMethod.getReturnType();
+					@SuppressWarnings("unchecked")
+					//This case is safe
+					Class<? extends Monitored> monitoredType = (Class<? extends Monitored>)getMonitoredMethod.getReturnType();
 					addMonitoringTaskToMonitored(clas, monitoredType);
 				}
 			} else {
@@ -87,9 +93,9 @@ public class DefaultMonitoredProvider implements MonitoredProvider {
 		}
 	}
 
-	private void addMonitoringTaskToMonitored(Class<MonitoringTask> monitoringTask, Class<?> monitoredType) {
+	private void addMonitoringTaskToMonitored(Class<MonitoringTask<? extends Monitored>> monitoringTask, Class<? extends Monitored> monitoredType) {
 		if (this.providerMap.containsKey(monitoredType)) {
-			Collection<Class<MonitoringTask>> currentClassMonitoringTasks = this.providerMap.get(monitoredType);
+			Collection<Class<MonitoringTask<? extends Monitored>>> currentClassMonitoringTasks = this.providerMap.get(monitoredType);
 			currentClassMonitoringTasks.add(monitoringTask);
 		} else {
 			boolean found = false;
@@ -110,9 +116,12 @@ public class DefaultMonitoredProvider implements MonitoredProvider {
 		return Collections.unmodifiableCollection(this.providerMap.keySet());
 	}
 
+	//That was the only way to satisfy the signature
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Collection<Class<MonitoringTask>> getAllMonitoringTaskClasses(Class<? extends Monitored> monitoredClass) {
-		return Collections.unmodifiableCollection(this.providerMap.get(monitoredClass));
+	public <T extends Monitored> Collection<Class<MonitoringTask<T>>> getAllMonitoringTaskClasses(Class<T> monitoredClass) {
+		Collection monitoredMonitoringTaskClasses = this.providerMap.get(monitoredClass);
+		return Collections.unmodifiableCollection(monitoredMonitoringTaskClasses);
 	}
 
 }

@@ -66,37 +66,37 @@ public class JmxProcessImpl implements JmxProcess {
 
 	@Override
 	public String getId() {
-		return id;
+		return this.id;
 	}
 
 	@Override
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	@Override
 	public int getPort() {
-		return port;
+		return this.port;
 	}
 
 	@Override
 	public String getHostname() {
-		return hostname;
+		return this.hostname;
 	}
 
 	@Override
 	public JMXConnector getServerConnection() throws IOException {
 		JMXServiceURL jMXServiceURL = new JMXServiceURL(this.url);
-		return JMXConnectorFactory.connect(jMXServiceURL, environment);
+		return JMXConnectorFactory.connect(jMXServiceURL, this.environment);
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((hostname == null) ? 0 : hostname.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + port;
+		result = prime * result + ((this.hostname == null) ? 0 : this.hostname.hashCode());
+		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result + this.port;
 		return result;
 	}
 
@@ -112,21 +112,21 @@ public class JmxProcessImpl implements JmxProcess {
 			return false;
 		}
 		JmxProcessImpl other = (JmxProcessImpl)obj;
-		if (hostname == null) {
+		if (this.hostname == null) {
 			if (other.hostname != null) {
 				return false;
 			}
-		} else if (!hostname.equals(other.hostname)) {
+		} else if (!this.hostname.equals(other.hostname)) {
 			return false;
 		}
-		if (name == null) {
+		if (this.name == null) {
 			if (other.name != null) {
 				return false;
 			}
-		} else if (!name.equals(other.name)) {
+		} else if (!this.name.equals(other.name)) {
 			return false;
 		}
-		if (port != other.port) {
+		if (this.port != other.port) {
 			return false;
 		}
 		return true;

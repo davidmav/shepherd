@@ -37,6 +37,8 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 
 	@Test
 	public void testAddingBeanDefinition() {
+		@SuppressWarnings("unchecked")
+		//Safe casting
 		Constructor<? extends Monitored>[] constructors = (Constructor<? extends Monitored>[])JmxProcessImpl.class.getConstructors();
 		Constructor<? extends Monitored> uiConstructor = null;
 		for (Constructor<? extends Monitored> constructor : constructors) {
@@ -46,10 +48,10 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 			}
 		}
 		Object[] args = new Object[] { "test", "testName", "localhost", 2222, null, null };
-		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
-		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == false);
-		beanRegistrarService.saveBeanDefinition(beanDefinition, false);
-		Object bean = applicationContext.getBean(beanDefinition.getAttribute("id").toString());
+		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
+		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == false);
+		this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);
+		Object bean = this.applicationContext.getBean(beanDefinition.getAttribute("id").toString());
 		Assert.assertTrue(bean != null);
 		Assert.assertTrue(bean.getClass().getName().equals(beanDefinition.getBeanClassName()));
 		File createBeanFile = new File("./work/monitored/test.xml");
@@ -60,8 +62,10 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 	@Test
 	public void testOverwritingBeanDefinition() {
 		testAddingBeanDefinition();
-		Monitored bean = (Monitored)applicationContext.getBean("test");
+		Monitored bean = (Monitored)this.applicationContext.getBean("test");
 		Assert.assertTrue(bean.getName().equals("testName"));
+		@SuppressWarnings("unchecked")
+		//Safe casting
 		Constructor<? extends Monitored>[] constructors = (Constructor<? extends Monitored>[])JmxProcessImpl.class.getConstructors();
 		Constructor<? extends Monitored> uiConstructor = null;
 		for (Constructor<? extends Monitored> constructor : constructors) {
@@ -71,10 +75,10 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 			}
 		}
 		Object[] args = new Object[] { "test", "secondBean", "localhost", 2222, null, null };
-		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
-		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == true);
-		beanRegistrarService.saveBeanDefinition(beanDefinition, true);
-		bean = (Monitored)applicationContext.getBean("test");
+		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
+		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == true);
+		this.beanRegistrarService.saveBeanDefinition(beanDefinition, true);
+		bean = (Monitored)this.applicationContext.getBean("test");
 		Assert.assertTrue(bean.getName().equals("secondBean"));
 		File createBeanFile = new File("./work/monitored/test.xml");
 		Assert.assertTrue(createBeanFile.exists());
@@ -84,6 +88,8 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 	@Test(expected = BeanAlreadyExistsException.class)
 	public void testThrowingExceptionIfBeanExists() {
 		testAddingBeanDefinition();
+		@SuppressWarnings("unchecked")
+		//Safe Casting
 		Constructor<? extends Monitored>[] constructors = (Constructor<? extends Monitored>[])JmxProcessImpl.class.getConstructors();
 		Constructor<? extends Monitored> uiConstructor = null;
 		for (Constructor<? extends Monitored> constructor : constructors) {
@@ -93,19 +99,21 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 			}
 		}
 		Object[] args = new Object[] { "test", "anotherBean", "localhost", 3333, null, null };
-		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
-		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == true);
-		beanRegistrarService.saveBeanDefinition(beanDefinition, false);
+		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
+		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == true);
+		this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);
 	}
 
 	@Test(expected = BeanOfOtherClassAlreadyExistsException.class)
 	public void testThrowingExceptionIfBeanExistsOfOtherClass() {
 		testAddingBeanDefinition();
 		Object[] args = new Object[] {};
+		@SuppressWarnings("unchecked")
+		//Safe Casting
 		Constructor<? extends Monitored> constructor = (Constructor<? extends Monitored>)MonitoredTest.class.getConstructors()[0];
-		BeanDefinition beanDefinition = beanDefinitionService.createMonitoredBeanDefinition("test", constructor, args);
-		Assert.assertTrue(beanRegistrarService.beanExists(beanDefinition) == true);
-		beanRegistrarService.saveBeanDefinition(beanDefinition, false);
+		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", constructor, args);
+		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == true);
+		this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);
 	}
 
 	@Override

@@ -30,19 +30,19 @@ public enum DashboardViewType {
 	}
 
 	public boolean isStateful() {
-		return stateful;
+		return this.stateful;
 	}
 
 	public String getViewName() {
-		return viewName;
+		return this.viewName;
 	}
 
 	public Class<? extends View> getViewClass() {
-		return viewClass;
+		return this.viewClass;
 	}
 
 	public Resource getIcon() {
-		return icon;
+		return this.icon;
 	}
 
 	public static DashboardViewType getByViewName(final String viewName) {

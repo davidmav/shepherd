@@ -1,69 +1,69 @@
 package org.shepherd.domain;
 
-
 public final class DashboardNotification {
-    private long id;
-    private String content;
-    private boolean read;
-    private String firstName;
-    private String lastName;
-    private String prettyTime;
-    private String action;
 
-    public long getId() {
-        return id;
-    }
+	private long id;
+	private String content;
+	private boolean read;
+	private String firstName;
+	private String lastName;
+	private String prettyTime;
+	private String action;
 
-    public void setId(final long id) {
-        this.id = id;
-    }
+	public long getId() {
+		return this.id;
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public void setId(final long id) {
+		this.id = id;
+	}
 
-    public void setContent(final String content) {
-        this.content = content;
-    }
+	public String getContent() {
+		return this.content;
+	}
 
-    public boolean isRead() {
-        return read;
-    }
+	public void setContent(final String content) {
+		this.content = content;
+	}
 
-    public void setRead(final boolean read) {
-        this.read = read;
-    }
+	public boolean isRead() {
+		return this.read;
+	}
 
-    public String getFirstName() {
-        return firstName;
-    }
+	public void setRead(final boolean read) {
+		this.read = read;
+	}
 
-    public void setFirstName(final String firstName) {
-        this.firstName = firstName;
-    }
+	public String getFirstName() {
+		return this.firstName;
+	}
 
-    public String getLastName() {
-        return lastName;
-    }
+	public void setFirstName(final String firstName) {
+		this.firstName = firstName;
+	}
 
-    public void setLastName(final String lastName) {
-        this.lastName = lastName;
-    }
+	public String getLastName() {
+		return this.lastName;
+	}
 
-    public String getPrettyTime() {
-        return prettyTime;
-    }
+	public void setLastName(final String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setPrettyTime(final String prettyTime) {
-        this.prettyTime = prettyTime;
-    }
+	public String getPrettyTime() {
+		return this.prettyTime;
+	}
 
-    public String getAction() {
-        return action;
-    }
+	public void setPrettyTime(final String prettyTime) {
+		this.prettyTime = prettyTime;
+	}
 
-    public void setAction(final String action) {
-        this.action = action;
-    }
+	public String getAction() {
+		return this.action;
+	}
+
+	public void setAction(final String action) {
+		this.action = action;
+	}
 
 }

@@ -29,7 +29,7 @@ import org.shepherd.vaadin.dashboard.event.DashboardEventBus;
 /**
  * A responsive menu component providing user information and the controls for primary navigation between the views.
  */
-@SuppressWarnings({ "serial", "unchecked" })
+@SuppressWarnings({ "serial" })
 public final class DashboardMenu extends CustomComponent {
 
 	public static final String ID = "dashboard-menu";
@@ -136,9 +136,9 @@ public final class DashboardMenu extends CustomComponent {
 			//			}
 
 			if (view == DashboardViewType.DASHBOARD) {
-				notificationsBadge = new Label();
-				notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
-				menuItemComponent = buildBadgeWrapper(menuItemComponent, notificationsBadge);
+				this.notificationsBadge = new Label();
+				this.notificationsBadge.setId(NOTIFICATIONS_BADGE_ID);
+				menuItemComponent = buildBadgeWrapper(menuItemComponent, this.notificationsBadge);
 			}
 			//			if (view == DashboardViewType.REPORTS) {
 			//				reportsBadge = new Label();
@@ -193,20 +193,20 @@ public final class DashboardMenu extends CustomComponent {
 	public void updateNotificationsCount(final NotificationsCountUpdatedEvent event) {
 		//		int unreadNotificationsCount = DashboardUI.getDataProvider().getUnreadNotificationsCount();
 		int unreadNotificationsCount = 0;
-		notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
-		notificationsBadge.setVisible(unreadNotificationsCount > 0);
+		this.notificationsBadge.setValue(String.valueOf(unreadNotificationsCount));
+		this.notificationsBadge.setVisible(unreadNotificationsCount > 0);
 	}
 
 	@Subscribe
 	public void updateReportsCount(final ReportsCountUpdatedEvent event) {
-		reportsBadge.setValue(String.valueOf(event.getCount()));
-		reportsBadge.setVisible(event.getCount() > 0);
+		this.reportsBadge.setValue(String.valueOf(event.getCount()));
+		this.reportsBadge.setVisible(event.getCount() > 0);
 	}
 
 	@Subscribe
 	public void updateUserName(final ProfileUpdatedEvent event) {
 		User user = getCurrentUser();
-		settingsItem.setText(user.getFirstName() + " " + user.getLastName());
+		this.settingsItem.setText(user.getFirstName() + " " + user.getLastName());
 	}
 
 	public final class ValoMenuItemButton extends Button {
@@ -234,7 +234,7 @@ public final class DashboardMenu extends CustomComponent {
 		@Subscribe
 		public void postViewChange(final PostViewChangeEvent event) {
 			removeStyleName(STYLE_SELECTED);
-			if (event.getView() == view) {
+			if (event.getView() == this.view) {
 				addStyleName(STYLE_SELECTED);
 			}
 		}

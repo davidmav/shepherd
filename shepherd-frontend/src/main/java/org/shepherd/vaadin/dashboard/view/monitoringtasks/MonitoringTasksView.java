@@ -41,9 +41,9 @@ public final class MonitoringTasksView extends VerticalLayout implements View {
 
 		addComponent(buildToolbar());
 
-		table = buildTable();
-		addComponent(table);
-		setExpandRatio(table, 1);
+		this.table = buildTable();
+		addComponent(this.table);
+		setExpandRatio(this.table, 1);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public final class MonitoringTasksView extends VerticalLayout implements View {
 	}
 
 	private Table buildTable() {
-		final Table table = new Table() {
+		final Table table1 = new Table() {
 
 			@Override
 			protected String formatPropertyValue(final Object rowId, final Object colId, final Property<?> property) {
@@ -93,11 +93,11 @@ public final class MonitoringTasksView extends VerticalLayout implements View {
 				return result;
 			}
 		};
-		table.setSizeFull();
-		table.addStyleName(ValoTheme.TABLE_BORDERLESS);
-		table.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
-		table.addStyleName(ValoTheme.TABLE_COMPACT);
-		table.setSelectable(true);
+		table1.setSizeFull();
+		table1.addStyleName(ValoTheme.TABLE_BORDERLESS);
+		table1.addStyleName(ValoTheme.TABLE_NO_HORIZONTAL_LINES);
+		table1.addStyleName(ValoTheme.TABLE_COMPACT);
+		table1.setSelectable(true);
 		//
 		//		table.setColumnCollapsingAllowed(true);
 		//		table.setColumnCollapsible("time", false);
@@ -123,19 +123,19 @@ public final class MonitoringTasksView extends VerticalLayout implements View {
 		//		table.setDragMode(TableDragMode.MULTIROW);
 		//		table.setMultiSelect(true);
 
-		table.addValueChangeListener(new ValueChangeListener() {
+		table1.addValueChangeListener(new ValueChangeListener() {
 
 			@Override
 			public void valueChange(final ValueChangeEvent event) {
-				if (table.getValue() instanceof Set) {
-					Set<Object> val = (Set<Object>)table.getValue();
-					createReport.setEnabled(val.size() > 0);
+				if (table1.getValue() instanceof Set) {
+					Set<Object> val = (Set<Object>)table1.getValue();
+					MonitoringTasksView.this.createReport.setEnabled(val.size() > 0);
 				}
 			}
 		});
-		table.setImmediate(true);
+		table1.setImmediate(true);
 
-		return table;
+		return table1;
 	}
 
 	void createNewReportFromSelection() {
