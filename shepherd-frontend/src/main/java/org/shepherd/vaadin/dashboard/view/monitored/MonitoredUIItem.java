@@ -13,14 +13,20 @@ import org.shepherd.monitored.Monitored;
 import org.shepherd.monitored.annotation.MonitoredDisplayName;
 import org.shepherd.monitored.annotation.ParamDisplayName;
 import org.shepherd.monitored.annotation.UICreationPoint;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.ConstructorArgumentValues.ValueHolder;
+import org.springframework.beans.factory.config.TypedStringValue;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -40,13 +46,32 @@ public class MonitoredUIItem {
 	public MonitoredUIItem(Class<Monitored> monitored) {
 
 		this.monitored = monitored;
-		List<Component> initializedComponents = initializeComponents();
+		List<Component> initializedComponents = initializeComponents(Collections.emptyMap());
 		this.layout = new VerticalLayout(initializedComponents.toArray(new Component[initializedComponents.size()]));
 		this.layout.setCaption(this.toString() + " Settings");
 	}
 
 	@SuppressWarnings("unchecked")
-	protected List<Component> initializeComponents() {
+	//Safe casting
+	public MonitoredUIItem(BeanDefinition monitoredBeanDefinition) {
+
+		try {
+			this.monitored = (Class<Monitored>)Class.forName(monitoredBeanDefinition.getBeanClassName());
+		} catch (ClassNotFoundException e) {
+			//Should never happen
+		}
+		ConstructorArgumentValues constructorArgumentValues = monitoredBeanDefinition.getConstructorArgumentValues();
+		List<Component> initializedComponents = initializeComponents(constructorArgumentValues.getIndexedArgumentValues());
+		this.layout = new VerticalLayout(initializedComponents.toArray(new Component[initializedComponents.size()]));
+		this.layout.setCaption(this.toString() + " Settings");
+	}
+
+	public TextField getIdField() {
+		return (TextField)this.layout.iterator().next();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected List<Component> initializeComponents(Map<Integer, ValueHolder> valueMap) {
 		List<Component> components = new ArrayList<Component>();
 		Constructor<?>[] constructors = this.monitored.getConstructors();
 		for (Constructor<?> constructor : constructors) {
@@ -57,18 +82,37 @@ public class MonitoredUIItem {
 
 				for (ParamDisplayName paramDisplayName : uiCreationPoint.params()) {
 
-					Component component = null;
+					@SuppressWarnings("rawtypes")
+					AbstractField component = null;
 					String displayName = paramDisplayName.displayName();
 
 					Parameter parameter = constructor.getParameters()[i];
-
+					ValueHolder valueHolder = valueMap.get(i);
+					Object value = null;
+					if (valueHolder != null && valueHolder.getValue() != null) {
+						if (valueHolder.getValue() instanceof TypedStringValue) {
+							value = ((TypedStringValue)valueHolder.getValue()).getValue();
+						} else {
+							value = valueHolder.getValue();
+						}
+					}
 					if (parameter.getType().isEnum()) {
 						component = getComboForEnum(displayName, parameter);
+
 					} else if (paramDisplayName.passwordField()) {
 						component = new PasswordField(displayName);
 					} else {
 						component = new TextField(displayName);
 					}
+					if (component != null && value != null) {
+						component.setValue(value.toString());
+						if (component instanceof ComboBox) {
+							@SuppressWarnings("rawtypes")
+							Enum<?> enumValue = Enum.valueOf((Class<? extends Enum>)((ComboBox)component).getItemIds().iterator().next().getClass(), value.toString());
+							((ComboBox)component).select(enumValue);
+						}
+					}
+					component.setId(parameter.getName());
 					components.add(component);
 					i++;
 				}
@@ -79,8 +123,8 @@ public class MonitoredUIItem {
 		return components;
 	}
 
-	private Component getComboForEnum(String caption, Parameter parameter) {
-		Component component = null;
+	private ComboBox getComboForEnum(String caption, Parameter parameter) {
+		ComboBox component = null;
 		if (parameter.getType().isEnum()) {
 			Object[] enumConstants = parameter.getType().getEnumConstants();
 			component = new ComboBox(caption, Arrays.asList(enumConstants));

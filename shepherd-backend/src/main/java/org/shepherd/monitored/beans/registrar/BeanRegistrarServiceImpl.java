@@ -85,11 +85,7 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 		if (beanExists && overwrite) {
 			LOGGER.debug("Looking for previous bean definition");
 			Object bean = this.applicationContext.getBean(id);
-			if (!beanFactory.containsBeanDefinition(id)) {
-				previousBeanDefinition = ((DefaultListableBeanFactory)beanFactory.getParentBeanFactory()).getBeanDefinition(id);
-			} else {
-				previousBeanDefinition = beanFactory.getBeanDefinition(id);
-			}
+			previousBeanDefinition = getBeanDefinition(id);
 			LOGGER.debug("Destroying previous bean definition");
 			beanFactory.destroyBean(bean);
 		}
@@ -144,5 +140,18 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 		} else {
 			throw new IllegalArgumentException("Someone played with the application context, did you change the project to a web project??");
 		}
+	}
+
+	@Override
+	public BeanDefinition getBeanDefinition(String id) {
+		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)this.applicationContext.getBeanFactory();
+		BeanDefinition beanDefinition = null;
+		LOGGER.debug("Looking for bean definition {}", id);
+		if (!beanFactory.containsBeanDefinition(id)) {
+			beanDefinition = ((DefaultListableBeanFactory)beanFactory.getParentBeanFactory()).getBeanDefinition(id);
+		} else {
+			beanDefinition = beanFactory.getBeanDefinition(id);
+		}
+		return beanDefinition;
 	}
 }
