@@ -22,4 +22,13 @@ public interface BeanRegistrarService {
 	 */
 	public void saveBeanDefinition(BeanDefinition beanDefinition, boolean overwrite);
 
+	/**
+	 * 
+	 * @since Jan 7, 2015
+	 * @author davidm
+	 * @param id
+	 * @return
+	 */
+	public BeanDefinition getBeanDefinition(String id);
+
 }
