@@ -9,7 +9,6 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field.ValueChangeEvent;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
@@ -27,6 +26,7 @@ import org.shepherd.monitored.beans.registrar.UnableToSaveBeanException;
 import org.shepherd.vaadin.dashboard.view.monitored.MonitoredUIItem;
 import org.shepherd.vaadin.dashboard.view.monitored.MonitoredView;
 import org.shepherd.vaadin.dashboard.view.monitored.table.MonitoredTable;
+import org.shepherd.vaadin.ui.YesNoWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -119,6 +119,7 @@ public class MonitoredWindow extends Window {
 		this.beanDefinition = monitoredBeanDefinition;
 		//Safe Casting
 		MonitoredUIItem item = new MonitoredUIItem(monitoredBeanDefinition);
+		item.getIdField().setValue(monitoredId);
 		Layout testSaveButtonsLayout = createTestSaveButtonsLayout();
 		Layout comboBoxLayout = createComboBoxLayout(this.monitoredComboBox, Collections.singletonMap(item, item.getLayout()), testSaveButtonsLayout);
 		this.monitoredComboBox.addItem(item);
@@ -236,7 +237,7 @@ public class MonitoredWindow extends Window {
 					Object[] arguments = value.getArguments();
 					TextField id = (TextField)value.getLayout().iterator().next();
 					BeanDefinition newBeanDefinition = MonitoredWindow.this.beanDefinitionService.createMonitoredBeanDefinition(id.getValue(), constructor, arguments);
-					overwriteWindow = createOverwriteWindow(MonitoredWindow.this, newBeanDefinition);
+					overwriteWindow = createOverwriteWindow(MonitoredWindow.this, newBeanDefinition, id);
 					if (MonitoredWindow.this.beanDefinition != null) {
 						MonitoredWindow.this.beanRegistrarService.saveBeanDefinition(newBeanDefinition, true);
 					} else {
@@ -266,49 +267,27 @@ public class MonitoredWindow extends Window {
 
 		}
 
-		private Window createOverwriteWindow(Window newMonitoredWindow1, final BeanDefinition newBeanDefinition) {
-			Window overwriteWindow = new Window(" Monitored with the same Id already exists ");
-			overwriteWindow.setIcon(FontAwesome.INFO);
-			overwriteWindow.setModal(true);
-			overwriteWindow.setResizable(false);
-			VerticalLayout verticalLayout = new VerticalLayout();
-			HorizontalLayout horizontalLayout = new HorizontalLayout();
-			Label label = new Label("Monitored with the same Id already exists, overwrite?");
-			Button noButton = new Button("No");
-			noButton.addClickListener(new ClickListener() {
+		private Window createOverwriteWindow(Window newMonitoredWindow1, final BeanDefinition newBeanDefinition, TextField id) {
 
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					overwriteWindow.close();
-				}
-			});
-			Button yesButton = new Button("Yes");
-			yesButton.addClickListener(new ClickListener() {
+			YesNoWindow yesNoWindow = new YesNoWindow("Monitored with the same Id already exists", "Monitored with the same Id already exists, overwrite?", new ClickListener() {
 
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void buttonClick(ClickEvent event) {
 					MonitoredWindow.this.beanRegistrarService.saveBeanDefinition(newBeanDefinition, true);
-					overwriteWindow.close();
 					newMonitoredWindow1.close();
 					Notification notification = new Notification("Monitored Application Saved Successfully");
 					notification.show(UI.getCurrent().getPage());
 					MonitoredWindow.this.parentTable.refreshTable();
 					MonitoredWindow.this.beanDefinition = newBeanDefinition;
 					MonitoredWindow.this.parentTable.addMonitoredWindow(newBeanDefinition.getAttribute("id"), MonitoredWindow.this);
+					MonitoredWindow.this.idField = id;
 					MonitoredWindow.this.setModeEdit();
 				}
-			});
-			horizontalLayout.addComponents(yesButton, noButton);
-			horizontalLayout.setSpacing(true);
-			verticalLayout.addComponents(label, horizontalLayout);
-			verticalLayout.setSpacing(true);
-			verticalLayout.setMargin(true);
-			overwriteWindow.setContent(verticalLayout);
-			return overwriteWindow;
+			}, null);
+
+			return yesNoWindow;
 		}
 	}
 

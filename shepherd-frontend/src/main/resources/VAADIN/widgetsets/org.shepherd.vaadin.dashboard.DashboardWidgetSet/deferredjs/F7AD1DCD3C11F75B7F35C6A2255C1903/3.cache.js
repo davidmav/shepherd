@@ -1,0 +1,1 @@
+$wnd.org_shepherd_vaadin_dashboard_DashboardWidgetSet.runAsyncCallback3('$Bb(1,null,{});_.gC=function X(){return this.cZ};j5e(sn)(3);\n//# sourceURL=org.shepherd.vaadin.dashboard.DashboardWidgetSet-3.js\n')

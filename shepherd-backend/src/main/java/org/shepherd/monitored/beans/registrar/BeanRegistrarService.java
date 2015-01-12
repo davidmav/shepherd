@@ -2,6 +2,13 @@ package org.shepherd.monitored.beans.registrar;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 
+/**
+ * 
+ * 
+ * @author davidm
+ * @since Jan 11, 2015
+ * @version 0.1.0
+ */
 public interface BeanRegistrarService {
 
 	/**
@@ -21,6 +28,15 @@ public interface BeanRegistrarService {
 	 * @return
 	 */
 	public void saveBeanDefinition(BeanDefinition beanDefinition, boolean overwrite);
+
+	/**
+	 * 
+	 * @since Jan 4, 2015
+	 * @author davidm
+	 * @param beanDefintion
+	 * @return
+	 */
+	public void deleteBean(String beanId);
 
 	/**
 	 * 

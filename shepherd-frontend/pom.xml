@@ -36,10 +36,11 @@
 			<url>https://oss.sonatype.org/content/repositories/vaadin/</url>
 		</repository>
 	</repositories>
+
+
 	<build>
-
+		<finalName>${project.artifactId}</finalName>
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -50,7 +51,101 @@
 					<testTarget>1.8</testTarget>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>7.3.7</version>
+				<configuration>
+					<extraJvmArgs>-Xmx1g -Xss1024k</extraJvmArgs>
+
+					<!-- We are doing "inplace" gwt compilation but into subdir VAADIN/widgetsets -->
+					<webappDirectory>src/main/resources/VAADIN/widgetsets
+					</webappDirectory>
+					<hostedWebapp>src/main/resources/VAADIN/widgetsets
+					</hostedWebapp>
+					<noServer>true</noServer>
+					<!-- Remove draftCompile when project is ready -->
+					<draftCompile>true</draftCompile>
+					<persistentunitcachedir>${project.build.directory}/gwtdirt</persistentunitcachedir>
+					<compileReport>false</compileReport>
+					<style>OBF</style>
+					<strict>true</strict>
+					<!-- Symbol maps etc, not needed in vaadin app, just target them outside war -->
+					<deploy>${project.build.directory}/gwt-deploy</deploy>
+				</configuration>
+				<executions>
+					<execution>
+						<configuration>
+							<!-- if you don't specify any modules, the plugin will find them -->
+<!-- 							<modules> -->
+<!-- 								<module>org.vaadin.peter.contextmenu.ContextmenuWidgetset</module> -->
+<!-- 							</modules> -->
+						</configuration>
+						<goals>
+							<goal>clean</goal>
+							<goal>resources</goal>
+							<!-- These are non functional currently with spring boot directory structure <goal>update-theme</goal> <goal>compile-theme</goal> -->
+							<goal>update-widgetset</goal>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<!-- ensure fresly compiled widgetset to jar, TODO check vaadin plugin configuration could get rid of this -->
+					<execution>
+						<id>copy-resources</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/VAADIN</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${basedir}/src/main/resources/VAADIN</directory>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.vaadin</groupId>
+										<artifactId>vaadin-maven-plugin</artifactId>
+										<versionRange>[7.3.7,)</versionRange>
+										<goals>
+											<goal>resources</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 
@@ -132,8 +227,11 @@
 			<artifactId>jsp-api</artifactId>
 			<version>2.0</version>
 		</dependency>
-
-
+		<dependency>
+			<groupId>org.vaadin.addons</groupId>
+			<artifactId>contextmenu</artifactId>
+			<version>4.5</version>
+		</dependency>
 		<dependency>
 			<groupId>org.shepherd</groupId>
 			<artifactId>shepherd-backend</artifactId>
@@ -142,7 +240,12 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
-			<version>8.1.16.v20140903</version><!--$NO-MVN-MAN-VER$-->
+			<version>8.1.16.v20140903</version><!--$NO-MVN-MAN-VER$ -->
+		</dependency>
+		<dependency>
+			<groupId>org.scala-lang</groupId>
+			<artifactId>scala-library</artifactId>
+			<version>2.10.4</version>
 		</dependency>
 	</dependencies>
 	<scm>

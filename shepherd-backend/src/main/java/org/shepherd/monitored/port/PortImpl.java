@@ -3,6 +3,7 @@ package org.shepherd.monitored.port;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.shepherd.monitored.AbstractMonitored;
 import org.shepherd.monitored.MonitoredException;
 import org.shepherd.monitored.annotation.MonitoredDisplayName;
 import org.shepherd.monitored.annotation.ParamDisplayName;
@@ -15,10 +16,8 @@ import org.springframework.util.Assert;
  *
  */
 @MonitoredDisplayName("Port")
-public class PortImpl implements Port {
+public class PortImpl extends AbstractMonitored implements Port {
 
-	
-	protected String id;
 	
 	protected String name;
 
@@ -28,11 +27,11 @@ public class PortImpl implements Port {
 	
 	protected PortType portType;
 	
-	@UICreationPoint(params = {  @ParamDisplayName(index = 0, displayName = "Id"),@ParamDisplayName(index = 1, displayName = "Name"), 
-			@ParamDisplayName(index = 2, displayName = "Hostname"), 
-			@ParamDisplayName(index = 3, displayName = "Port"), 
-			@ParamDisplayName(index = 4, displayName = "Port Type")})
-	public PortImpl(String id,String name, String hostname, int port, PortType portType) {
+	@UICreationPoint(params = {@ParamDisplayName(index = 0, displayName = "Name"), 
+			@ParamDisplayName(index = 1, displayName = "Hostname"), 
+			@ParamDisplayName(index = 2, displayName = "Port"), 
+			@ParamDisplayName(index = 3, displayName = "Port Type")})
+	public PortImpl(String name, String hostname, int port, PortType portType) {
 		super();
 		Assert.notNull(name);
 		Assert.notNull(hostname);
@@ -127,12 +126,5 @@ public class PortImpl implements Port {
 		}
 		return true;
 	}
-
-
-	@Override
-	public String getId() {
-		return this.id;
-	}
-	
 
 }
