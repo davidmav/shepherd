@@ -10,6 +10,7 @@ import org.shepherd.monitored.annotation.UICreationPoint;
 import org.shepherd.monitored.beans.definition.BeanDefinitionService;
 import org.shepherd.monitored.process.jmx.JmxProcessImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
@@ -47,7 +48,7 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 				break;
 			}
 		}
-		Object[] args = new Object[] { "test", "testName", "localhost", 2222, null, null };
+		Object[] args = new Object[] { "testName", "localhost", 2222, null, null };
 		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
 		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == false);
 		this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);
@@ -57,6 +58,32 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 		File createBeanFile = new File("./work/monitored/test.xml");
 		Assert.assertTrue(createBeanFile.exists());
 		createBeanFile.delete();
+	}
+
+	@Test(expected = NoSuchBeanDefinitionException.class)
+	public void testDeletingBeanDefinition() {
+		@SuppressWarnings("unchecked")
+		//Safe casting
+		Constructor<? extends Monitored>[] constructors = (Constructor<? extends Monitored>[])JmxProcessImpl.class.getConstructors();
+		Constructor<? extends Monitored> uiConstructor = null;
+		for (Constructor<? extends Monitored> constructor : constructors) {
+			if (constructor.getAnnotation(UICreationPoint.class) != null) {
+				uiConstructor = constructor;
+				break;
+			}
+		}
+		Object[] args = new Object[] { "testName", "localhost", 2222, null, null };
+		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
+		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == false);
+		this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);
+		Object bean = this.applicationContext.getBean(beanDefinition.getAttribute("id").toString());
+		Assert.assertTrue(bean != null);
+		Assert.assertTrue(bean.getClass().getName().equals(beanDefinition.getBeanClassName()));
+		File createBeanFile = new File("./work/monitored/test.xml");
+		Assert.assertTrue(createBeanFile.exists());
+		this.beanRegistrarService.deleteBean("test");
+		Assert.assertTrue(!createBeanFile.exists());
+		this.beanRegistrarService.getBeanDefinition("test");
 	}
 
 	@Test
@@ -74,7 +101,7 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 				break;
 			}
 		}
-		Object[] args = new Object[] { "test", "secondBean", "localhost", 2222, null, null };
+		Object[] args = new Object[] { "secondBean", "localhost", 2222, null, null };
 		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
 		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == true);
 		this.beanRegistrarService.saveBeanDefinition(beanDefinition, true);
@@ -98,7 +125,7 @@ public class BeanRegistrarServiceTest extends AbstractMonitoringTest implements 
 				break;
 			}
 		}
-		Object[] args = new Object[] { "test", "anotherBean", "localhost", 3333, null, null };
+		Object[] args = new Object[] { "anotherBean", "localhost", 3333, null, null };
 		BeanDefinition beanDefinition = this.beanDefinitionService.createMonitoredBeanDefinition("test", uiConstructor, args);
 		Assert.assertTrue(this.beanRegistrarService.beanExists(beanDefinition) == true);
 		this.beanRegistrarService.saveBeanDefinition(beanDefinition, false);

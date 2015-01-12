@@ -1,5 +1,10 @@
 // Import all the mixins for this theme
+@import "addons.scss";
 @import "dashboard";
+
+/* This file prefixes all rules with the theme name to avoid causing conflicts with other themes. */
+/* The actual styles should be defined in mytheme.scss */
+@include addons;
 
 .dashboard {
   // Output the actual theme selectors

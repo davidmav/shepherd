@@ -37,6 +37,8 @@ import java.util.Map;
  */
 public class MonitoredUIItem {
 
+	private static final String ID = "Id";
+
 	private Class<Monitored> monitored;
 
 	private Constructor<? extends Monitored> uiCreationPointConstructor;
@@ -61,8 +63,11 @@ public class MonitoredUIItem {
 			//Should never happen
 		}
 		ConstructorArgumentValues constructorArgumentValues = monitoredBeanDefinition.getConstructorArgumentValues();
+
 		List<Component> initializedComponents = initializeComponents(constructorArgumentValues.getIndexedArgumentValues());
-		this.layout = new VerticalLayout(initializedComponents.toArray(new Component[initializedComponents.size()]));
+		TextField component = new TextField(ID);
+		this.layout = new VerticalLayout(component);
+		this.layout.addComponents(initializedComponents.toArray(new Component[initializedComponents.size()]));
 		this.layout.setCaption(this.toString() + " Settings");
 	}
 

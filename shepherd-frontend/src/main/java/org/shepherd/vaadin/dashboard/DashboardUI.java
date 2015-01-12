@@ -3,6 +3,7 @@ package org.shepherd.vaadin.dashboard;
 import com.google.common.eventbus.Subscribe;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Title;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
@@ -43,6 +44,7 @@ import java.util.Locale;
 @EnableAutoConfiguration
 @ImportResource("META-INF/bootstrap/*")
 @VaadinUI
+@Widgetset("org.shepherd.vaadin.dashboard.DashboardWidgetSet")
 @Theme("dashboard")
 public final class DashboardUI extends UI {
 

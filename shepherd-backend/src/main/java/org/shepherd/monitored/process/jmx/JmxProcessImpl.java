@@ -1,5 +1,6 @@
 package org.shepherd.monitored.process.jmx;
 
+import org.shepherd.monitored.AbstractMonitored;
 import org.shepherd.monitored.MonitoredException;
 import org.shepherd.monitored.annotation.MonitoredDisplayName;
 import org.shepherd.monitored.annotation.ParamDisplayName;
@@ -22,12 +23,10 @@ import javax.management.remote.JMXServiceURL;
  *
  */
 @MonitoredDisplayName("JMX Process")
-public class JmxProcessImpl implements JmxProcess {
+public class JmxProcessImpl extends AbstractMonitored implements JmxProcess {
 
 	private static final String FRONT = "service:jmx:rmi:///jndi/rmi://";
 	private static final String BACK = "/jmxrmi";
-
-	protected String id;
 
 	protected String name;
 
@@ -41,17 +40,16 @@ public class JmxProcessImpl implements JmxProcess {
 
 	Map<String, String[]> environment;
 
-	public JmxProcessImpl(String id, String name, String hostname, int port) throws IOException {
-		this(id, name, hostname, port, null, null);
+	public JmxProcessImpl(String name, String hostname, int port) throws IOException {
+		this(name, hostname, port, null, null);
 	}
 
-	@UICreationPoint(params = { @ParamDisplayName(index = 0, displayName = "Id"), @ParamDisplayName(index = 1, displayName = "Name"), @ParamDisplayName(index = 2, displayName = "Hostname"),
-			@ParamDisplayName(index = 3, displayName = "Port"), @ParamDisplayName(index = 4, displayName = "Username"), @ParamDisplayName(index = 5, displayName = "Password", passwordField = true) })
-	public JmxProcessImpl(String id, String name, String hostname, int port, String userName, String password) throws IOException {
+	@UICreationPoint(params = { @ParamDisplayName(index = 0, displayName = "Name"), @ParamDisplayName(index = 1, displayName = "Hostname"), @ParamDisplayName(index = 2, displayName = "Port"),
+			@ParamDisplayName(index = 3, displayName = "Username"), @ParamDisplayName(index = 4, displayName = "Password", passwordField = true) })
+	public JmxProcessImpl(String name, String hostname, int port, String userName, String password) throws IOException {
 		Assert.notNull(name);
 		Assert.notNull(hostname);
 		Assert.isTrue(port >= 1 && port <= 65535);
-		this.id = id;
 		this.name = name;
 		this.hostname = hostname;
 		this.port = port;
@@ -62,11 +60,6 @@ public class JmxProcessImpl implements JmxProcess {
 			this.environment.put(JMXConnector.CREDENTIALS, credentials);
 		}
 
-	}
-
-	@Override
-	public String getId() {
-		return this.id;
 	}
 
 	@Override

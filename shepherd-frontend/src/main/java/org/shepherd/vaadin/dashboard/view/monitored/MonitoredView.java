@@ -36,7 +36,10 @@ public class MonitoredView extends VerticalLayout implements View {
 	@PostConstruct
 	private void init() {
 		this.monitoredTable.refreshTable();
-		addComponents(buildHeader(), this.monitoredTable);
+		VerticalLayout verticalLayout = new VerticalLayout(this.monitoredTable);
+		verticalLayout.setMargin(true);
+		addComponents(buildHeader(), verticalLayout);
+
 	}
 
 	private Component buildHeader() {

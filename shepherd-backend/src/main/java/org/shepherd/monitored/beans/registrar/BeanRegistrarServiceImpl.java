@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -61,27 +62,13 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 	public void saveBeanDefinition(BeanDefinition beanDefinition, boolean overwrite) {
 		String id = beanDefinition.getAttribute(ID).toString();
 		boolean beanExists = beanExists(beanDefinition);
-		if (beanExists) {
-			Object bean = this.applicationContext.getBean(id);
-			String beanClassName = beanDefinition.getBeanClassName();
-			if (beanClassName.equals(bean.getClass().getName())) {
-				if (!overwrite) {
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug("a bean with the same name {} and type {} already exists", new Object[] { id, beanClassName });
-					}
-					throw new BeanAlreadyExistsException();
-				}
-			} else {
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("a bean with the same name {} and a different type already exists", new Object[] { id });
-				}
-				throw new BeanOfOtherClassAlreadyExistsException();
-			}
-		}
+		validateBeanBeforeSave(beanDefinition, overwrite, id, beanExists);
 		LOGGER.debug("Passed the tests, saving the bean now");
 
 		DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)this.applicationContext.getBeanFactory();
+
 		BeanDefinition previousBeanDefinition = null;
+		LOGGER.debug("Destroying previous bean if exists");
 		if (beanExists && overwrite) {
 			LOGGER.debug("Looking for previous bean definition");
 			Object bean = this.applicationContext.getBean(id);
@@ -110,6 +97,38 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 		} catch (ClassNotFoundException e2) {
 			throw new UnableToSaveBeanException(e2);
 		}
+		File beanXml = getBeanContextXml(id, beanClass);
+		try (FileOutputStream os = new FileOutputStream(beanXml);) {
+			Element marshaledBeanDefinition = this.marshalService.marshalBeanDefinition(beanDefinition);
+			this.marshalService.writeElement(marshaledBeanDefinition, os);
+		} catch (UnsupportedEncodingException | TransformerException | FileNotFoundException | ParserConfigurationException e) {
+			throw new UnableToSaveBeanException(e);
+		} catch (IOException e1) {
+			LOGGER.error("Could not close resource", e1);
+		}
+	}
+
+	private void validateBeanBeforeSave(BeanDefinition beanDefinition, boolean overwrite, String id, boolean beanExists) {
+		if (beanExists) {
+			Object bean = this.applicationContext.getBean(id);
+			String beanClassName = beanDefinition.getBeanClassName();
+			if (beanClassName.equals(bean.getClass().getName())) {
+				if (!overwrite) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("a bean with the same name {} and type {} already exists", new Object[] { id, beanClassName });
+					}
+					throw new BeanAlreadyExistsException();
+				}
+			} else {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("a bean with the same name {} and a different type already exists", new Object[] { id });
+				}
+				throw new BeanOfOtherClassAlreadyExistsException();
+			}
+		}
+	}
+
+	private File getBeanContextXml(String id, Class<?> beanClass) {
 		String beanFile = id + XML_EXTENSION;
 		File directory = null;
 		if (Monitored.class.isAssignableFrom(beanClass)) {
@@ -123,14 +142,7 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 		if (beanXml.exists()) {
 			beanXml.delete();
 		}
-		try (FileOutputStream os = new FileOutputStream(beanXml);) {
-			Element marshaledBeanDefinition = this.marshalService.marshalBeanDefinition(beanDefinition);
-			this.marshalService.writeElement(marshaledBeanDefinition, os);
-		} catch (UnsupportedEncodingException | TransformerException | FileNotFoundException | ParserConfigurationException e) {
-			throw new UnableToSaveBeanException(e);
-		} catch (IOException e1) {
-			LOGGER.error("Could not close resource", e1);
-		}
+		return beanXml;
 	}
 
 	@Override
@@ -153,5 +165,23 @@ public class BeanRegistrarServiceImpl implements BeanRegistrarService, Applicati
 			beanDefinition = beanFactory.getBeanDefinition(id);
 		}
 		return beanDefinition;
+	}
+
+	@Override
+	public void deleteBean(String beanId) {
+		Assert.notNull(beanId);
+		Object bean = this.applicationContext.getBean(beanId);
+		LOGGER.debug("Removing bean definition and destroying bean");
+		if (beanId != null) {
+			DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory)this.applicationContext.getBeanFactory();
+			if (!beanFactory.containsBeanDefinition(beanId)) {
+				beanFactory = (DefaultListableBeanFactory)beanFactory.getParentBeanFactory();
+			}
+			beanFactory.removeBeanDefinition(beanId);
+			beanFactory.destroySingleton(beanId);
+		}
+		LOGGER.debug("Deleting bean context file");
+		File beanContextXml = getBeanContextXml(beanId, bean.getClass());
+		beanContextXml.delete();
 	}
 }
