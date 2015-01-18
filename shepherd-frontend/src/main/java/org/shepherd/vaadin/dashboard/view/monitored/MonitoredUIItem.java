@@ -152,6 +152,7 @@ public class MonitoredUIItem {
 		Object[] args = new Object[this.uiCreationPointConstructor.getParameterCount()];
 		int i = 0;
 		Iterator<Component> iterator = this.layout.iterator();
+		iterator.next(); //Skip the ID field
 		while (iterator.hasNext()) {
 
 			Component component = iterator.next();

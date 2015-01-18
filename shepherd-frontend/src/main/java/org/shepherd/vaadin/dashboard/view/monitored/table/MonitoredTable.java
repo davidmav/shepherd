@@ -21,18 +21,20 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 import org.vaadin.peter.contextmenu.ContextMenu;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItem;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickEvent;
 import org.vaadin.peter.contextmenu.ContextMenu.ContextMenuItemClickListener;
+import org.vaadin.spring.UIScope;
+import org.vaadin.spring.VaadinComponent;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-@Component
+@UIScope
+@VaadinComponent
 public class MonitoredTable extends Table implements ApplicationContextAware {
 
 	private static final long serialVersionUID = 1L;
